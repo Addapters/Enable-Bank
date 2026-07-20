@@ -1,0 +1,234 @@
+{
+  "common": {
+    "appName": "Enable Bank",
+    "tagline": "A plataforma colaborativa de produtos de apoio",
+    "loading": "A carregar...",
+    "error": "Ocorreu um erro",
+    "retry": "Tentar novamente",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Voltar",
+    "next": "Seguinte",
+    "submit": "Submeter",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "clear": "Limpar",
+    "yes": "Sim",
+    "no": "Não",
+    "or": "ou",
+    "and": "e",
+    "free": "Gratuito",
+    "seeAll": "Ver todos",
+    "noResults": "Sem resultados",
+    "required": "Obrigatório"
+  },
+  "nav": {
+    "home": "Início",
+    "search": "Pesquisar",
+    "publish": "Publicar",
+    "dashboard": "Os meus anúncios",
+    "admin": "Backoffice",
+    "login": "Entrar",
+    "register": "Registar",
+    "logout": "Sair",
+    "profile": "Perfil"
+  },
+  "home": {
+    "hero": {
+      "title": "Encontra o produto de apoio que precisas",
+      "subtitle": "Uma plataforma colaborativa de doação, troca e venda de produtos de apoio — gratuita, acessível e construída para quem mais precisa.",
+      "searchPlaceholder": "Ex: cadeira de rodas para criança de 5 anos em Lisboa",
+      "searchButton": "Pesquisar com Banky",
+      "orBrowse": "Ou explorar por categoria"
+    },
+    "stats": {
+      "products": "produtos disponíveis",
+      "municipalities": "concelhos cobertos",
+      "banks": "bancos físicos mapeados"
+    },
+    "howItWorks": {
+      "title": "Como funciona",
+      "step1": { "title": "Pesquisa", "description": "Descreve o que precisas em linguagem natural. O Banky encontra o produto certo para ti." },
+      "step2": { "title": "Contacta", "description": "Vê os contactos diretamente — sem intermediários, sem comissões." },
+      "step3": { "title": "Recebe", "description": "Combina a entrega ou recolha diretamente com quem tem o produto." }
+    }
+  },
+  "search": {
+    "title": "Pesquisa de produtos de apoio",
+    "placeholder": "Descreve o que precisas...",
+    "voice": "Pesquisa por voz",
+    "filters": {
+      "title": "Filtros",
+      "location": "Localização",
+      "district": "Distrito",
+      "municipality": "Concelho",
+      "type": "Tipo de transação",
+      "audience": "Público",
+      "availability": "Disponibilidade",
+      "category": "Categoria"
+    },
+    "types": {
+      "donation": "Doação",
+      "exchange": "Troca",
+      "sale": "Venda"
+    },
+    "audiences": {
+      "child": "Criança/Jovem",
+      "adult": "Adulto",
+      "both": "Ambos"
+    },
+    "availability": {
+      "immediate": "Disponível imediatamente"
+    },
+    "viewMap": "Ver em mapa",
+    "viewList": "Ver em lista",
+    "resultsCount": "{count} resultados encontrados"
+  },
+  "publication": {
+    "new": "Novo anúncio",
+    "edit": "Editar anúncio",
+    "title": "Título do produto",
+    "description": "Descrição",
+    "category": "Categoria",
+    "subcategory": "Subcategoria",
+    "type": "Tipo de transação",
+    "audience": "Público",
+    "condition": "Estado do produto",
+    "location": "Localização (Concelho)",
+    "contact": "Contacto",
+    "email": "Email de contacto",
+    "phone": "Telefone (opcional)",
+    "photos": "Fotografias",
+    "photosHelp": "Até 5 fotografias. O Banky irá analisar as imagens e sugerir os detalhes.",
+    "availability": "Disponível imediatamente",
+    "submit": "Publicar anúncio",
+    "conditions": { "new": "Novo", "good": "Bom estado", "used": "Usado" },
+    "status": { "pending": "Pendente", "active": "Ativo", "rejected": "Rejeitado", "donated": "Cedido/Vendido" },
+    "banky": {
+      "analyzing": "O Banky está a analisar as imagens...",
+      "suggestion": "Sugestão do Banky",
+      "accept": "Aceitar sugestão",
+      "edit": "Editar manualmente"
+    },
+    "moderationPending": "O teu anúncio está a aguardar aprovação. Receberás uma notificação quando for aprovado."
+  },
+  "auth": {
+    "login": {
+      "title": "Bem-vindo/a de volta",
+      "subtitle": "Entra na tua conta para ver contactos e publicar anúncios.",
+      "email": "Email",
+      "password": "Palavra-passe",
+      "submit": "Entrar",
+      "forgotPassword": "Esqueceste a palavra-passe?",
+      "noAccount": "Ainda não tens conta?",
+      "register": "Registar agora",
+      "orContinueWith": "Ou continuar com",
+      "google": "Continuar com Google"
+    },
+    "register": {
+      "title": "Criar conta",
+      "subtitle": "Junta-te ao Enable Bank e ajuda a construir uma comunidade mais inclusiva.",
+      "name": "Nome completo",
+      "email": "Email",
+      "password": "Palavra-passe",
+      "type": "Tipo de conta",
+      "typePersonal": "Particular",
+      "typeEntity": "Entidade (IPSS, Município, etc.)",
+      "location": "Concelho",
+      "submit": "Criar conta",
+      "hasAccount": "Já tens conta?",
+      "login": "Entrar",
+      "terms": "Ao registares-te, aceitas os nossos Termos de Utilização e Política de Privacidade."
+    }
+  },
+  "dashboard": {
+    "title": "Os meus anúncios",
+    "empty": "Ainda não publicaste nenhum anúncio.",
+    "publish": "Publicar o primeiro anúncio",
+    "newAd": "Novo anúncio",
+    "groups": {
+      "ativo": "Ativos",
+      "pendente": "Pendentes de aprovação",
+      "rejeitado": "Rejeitados",
+      "cedido": "Cedidos / Encerrados"
+    },
+    "stats": {
+      "active": "Ativos",
+      "pending": "Pendentes",
+      "donated": "Cedidos",
+      "rejected": "Rejeitados"
+    },
+    "actions": {
+      "edit": "Editar",
+      "deactivate": "Desativar",
+      "activate": "Ativar",
+      "delete": "Eliminar",
+      "markDonated": "Marcar como cedido",
+      "confirmDelete": "Tens a certeza?",
+      "confirmYes": "Sim, eliminar",
+      "confirmNo": "Cancelar"
+    }
+  },
+  "admin": {
+    "title": "Backoffice",
+    "moderation": {
+      "title": "Moderação",
+      "pending": "Pendentes",
+      "approve": "Aprovar",
+      "reject": "Rejeitar",
+      "rejectNote": "Nota para o publisher",
+      "rejectPlaceholder": "Explica o motivo da rejeição e o que deve ser corrigido..."
+    },
+    "categories": { "title": "Categorias", "new": "Nova categoria", "edit": "Editar categoria", "archive": "Arquivar" },
+    "users": { "title": "Utilizadores", "suspend": "Suspender", "delete": "Eliminar", "verify": "Verificar entidade" },
+    "stats": {
+      "title": "Estatísticas",
+      "totalPublications": "Total de anúncios",
+      "activePublications": "Anúncios ativos",
+      "totalUsers": "Utilizadores registados",
+      "topSearches": "Pesquisas frequentes",
+      "byCategory": "Por categoria",
+      "byRegion": "Por região"
+    }
+  },
+  "banky": {
+    "greeting": "Olá! Sou o Banky, o teu assistente. Como te posso ajudar?",
+    "searchHint": "Descreve o que procuras em linguagem natural",
+    "error": "Ocorreu um erro ao contactar o Banky. Tenta novamente.",
+    "thinking": "O Banky está a pensar..."
+  },
+  "categories": {
+    "mobility": "Mobilidade",
+    "communication": "Comunicação",
+    "bath": "Banho e Higiene",
+    "bed": "Cama e Descanso",
+    "rehabilitation": "Reabilitação",
+    "home": "Casa e Ambiente",
+    "leisure": "Lazer e Desporto",
+    "other": "Outros"
+  },
+  "map": {
+    "legend": { "title": "Legenda", "donation": "Doação", "exchange": "Troca", "sale": "Venda", "bank": "Banco físico" },
+    "popup": { "viewAd": "Ver anúncio" }
+  },
+  "errors": {
+    "notFound": "Página não encontrada",
+    "notFoundDescription": "A página que procuras não existe ou foi removida.",
+    "unauthorized": "Acesso não autorizado",
+    "unauthorizedDescription": "Precisas de estar autenticado para aceder a esta página.",
+    "serverError": "Erro interno do servidor"
+  },
+  "accessibility": {
+    "skipToContent": "Saltar para o conteúdo principal",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "searchInput": "Campo de pesquisa",
+    "voiceSearch": "Pesquisa por voz",
+    "previousPhoto": "Fotografia anterior",
+    "nextPhoto": "Próxima fotografia",
+    "mapView": "Ver resultados em mapa",
+    "listView": "Ver resultados em lista"
+  }
+}
