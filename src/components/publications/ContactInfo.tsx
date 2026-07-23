@@ -68,17 +68,19 @@ export default async function ContactInfo({ userId }: Props) {
           <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-2">
             Contactar publisher
           </p>
-          <PublisherAvatar
-            publisher={{
-              nome:       typedPublisher.nome,
-              tipo:       typedPublisher.tipo,
-              logoUrl,
-              verificada: isVerified,
-            }}
-            size={48}
-            showName
-            showBadge
-          />
+          <Link href={`/utilizadores/${userId}`} className="inline-block hover:opacity-80 transition-opacity">
+            <PublisherAvatar
+              publisher={{
+                nome:       typedPublisher.nome,
+                tipo:       typedPublisher.tipo,
+                logoUrl,
+                verificada: isVerified,
+              }}
+              size={48}
+              showName
+              showBadge
+            />
+          </Link>
         </div>
       )}
 

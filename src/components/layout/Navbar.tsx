@@ -48,6 +48,7 @@ export default function Navbar() {
   ];
 
   const profileHref = "/profile";
+  const publicProfileHref = user ? `/utilizadores/${user.id}` : profileHref;
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
@@ -70,8 +71,8 @@ export default function Navbar() {
             {user ? (
               <div className="relative group">
                 <Link
-                  href={profileHref}
-                  className={`flex items-center gap-1.5 text-sm font-medium bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors ${pathname === profileHref ? "ring-2 ring-purple-300" : ""}`}
+                  href={publicProfileHref}
+                  className={`flex items-center gap-1.5 text-sm font-medium bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors ${pathname === publicProfileHref ? "ring-2 ring-purple-300" : ""}`}
                   aria-label="O meu perfil"
                 >
                   <UserCircle className="w-4 h-4" aria-hidden="true" />
@@ -118,14 +119,17 @@ export default function Navbar() {
             <div className="border-t border-gray-200 pt-3 mt-3 space-y-1">
               {user ? (
                 <>
+                  <Link href={publicProfileHref} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
+                    <UserCircle className="w-4 h-4" aria-hidden="true" />Ver perfil
+                  </Link>
                   <Link href="/dashboard" className="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
                     Os meus anúncios
                   </Link>
                   <Link href="/favoritos" className="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
                     Os meus favoritos
                   </Link>
-                  <Link href={profileHref} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
-                    <UserCircle className="w-4 h-4" aria-hidden="true" />Editar perfil
+                  <Link href={profileHref} className="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
+                    Editar perfil
                   </Link>
                   <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md">{t("logout")}</button>
                 </>

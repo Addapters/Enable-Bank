@@ -109,7 +109,14 @@ export default async function PublicationDetailPage({ params }: Props) {
           <ContactInfo userId={pub.user_id} />
           <div className="text-xs text-center text-gray-400 space-y-1">
             <p>Publicado a {createdAt}</p>
-            {pub.user && <p>por <span className="font-medium text-gray-600">{pub.user.nome}</span></p>}
+            {pub.user && (
+              <p>
+                por{" "}
+                <Link href={`/utilizadores/${pub.user.id}`} className="font-medium text-gray-600 hover:text-purple-700 hover:underline">
+                  {pub.user.nome}
+                </Link>
+              </p>
+            )}
           </div>
         </aside>
       </div>
