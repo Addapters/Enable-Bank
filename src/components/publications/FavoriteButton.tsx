@@ -10,9 +10,15 @@ interface Props {
   initialFavorited: boolean;
   isAuthenticated: boolean;
   className?: string;
+  /** Tamanho do botão em px. Default: 32 */
+  size?: number;
+  /** "solid" = círculo branco com sombra (para sobrepor a fotos); "plain" = só o ícone, sem fundo. Default: "solid" */
+  variant?: "solid" | "plain";
 }
 
-export default function FavoriteButton({ publicationId, initialFavorited, isAuthenticated, className }: Props) {
+export default function FavoriteButton({
+  publicationId, initialFavorited, isAuthenticated, className, size = 32, variant = "solid",
+}: Props) {
   const [favorited, setFavorited] = useState(initialFavorited);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -35,6 +41,8 @@ export default function FavoriteButton({ publicationId, initialFavorited, isAuth
     });
   };
 
+  const iconSize = Math.round(size * 0.5);
+
   return (
     <button
       type="button"
@@ -42,10 +50,14 @@ export default function FavoriteButton({ publicationId, initialFavorited, isAuth
       disabled={pending}
       aria-pressed={favorited}
       aria-label={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-      className={`flex items-center justify-center w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors disabled:opacity-60 ${className ?? ""}`}
+      style={{ width: size, height: size }}
+      className={`flex items-center justify-center shrink-0 transition-colors disabled:opacity-60 ${
+        variant === "solid" ? "rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white" : "hover:opacity-70"
+      } ${className ?? ""}`}
     >
       <Heart
-        className={`w-4 h-4 transition-colors ${favorited ? "fill-red-500 text-red-500" : "text-gray-400"}`}
+        style={{ width: iconSize, height: iconSize }}
+        className={`transition-colors ${favorited ? "fill-purple-700 text-purple-700" : "text-gray-400"}`}
         aria-hidden="true"
       />
     </button>
