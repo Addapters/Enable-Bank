@@ -112,7 +112,7 @@ export default async function HomePage() {
           <div className="relative">
             {/* Linha ondulada decorativa a ligar os passos (só desktop) */}
             <svg
-              className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 w-full h-20 -z-0"
+              className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 w-full h-20 -z-10 opacity-30"
               viewBox="0 0 100 40"
               preserveAspectRatio="none"
               aria-hidden="true"
@@ -125,10 +125,10 @@ export default async function HomePage() {
                 </linearGradient>
               </defs>
               <path
-                d="M0,30 C 20,30 30,10 50,10 C 70,10 80,30 100,30"
+                d="M0,34 C 15,34 15,2 50,2 C 85,2 85,34 100,34"
                 fill="none"
                 stroke="url(#howItWorksWave)"
-                strokeWidth="2"
+                strokeWidth="2.5"
                 strokeLinecap="round"
               />
             </svg>
