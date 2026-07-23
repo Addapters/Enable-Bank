@@ -7,6 +7,7 @@ import PublicationCard from "@/components/publications/PublicationCard";
 import SearchFilters from "./SearchFilters";
 import type { PublicationRow, CategoryRow } from "@/types/database";
 import { getFavoriteState } from "@/lib/favorites/queries";
+import { getEntityMap, toPublisherInfo, type RawPublisher } from "@/lib/publications/publisherInfo";
 
 export const metadata: Metadata = { title: "Pesquisa de produtos de apoio" };
 
@@ -90,27 +91,10 @@ async function getResults(params: SearchParams) {
   type RawItem = PublicationRow & {
     category: { nome: string } | null;
     photos: { url: string; ordem: number }[];
-    publisher: { id: string; nome: string; tipo: string; avatar_url: string | null } | null;
+    publisher: RawPublisher;
   };
   const items = (data ?? []) as unknown as RawItem[];
-
-  // Batch-fetch entity data (logo + verificada) para os publishers de tipo entidade
-  const entityUserIds = [...new Set(
-    items
-      .filter((p) => p.publisher?.tipo === "entidade")
-      .map((p) => p.publisher!.id)
-  )];
-
-  const entityMap: Record<string, { logo_url: string | null; verificada: boolean }> = {};
-  if (entityUserIds.length > 0) {
-    const { data: entities } = await supabase
-      .from("entities")
-      .select("user_id, logo_url, verificada")
-      .in("user_id", entityUserIds);
-    for (const e of (entities ?? []) as { user_id: string; logo_url: string | null; verificada: boolean }[]) {
-      entityMap[e.user_id] = { logo_url: e.logo_url, verificada: e.verificada };
-    }
-  }
+  const entityMap = await getEntityMap(supabase, items.map((p) => p.publisher));
 
   return { items, count: count ?? 0, entityMap };
 }
@@ -182,30 +166,17 @@ export default async function SearchPage({ searchParams }: Props) {
           {items.length > 0 ? (
             <>
               <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" aria-label="Resultados da pesquisa">
-                {items.map((pub) => {
-                  const pubWithPublisher = pub as typeof pub & { publisher: { id: string; nome: string; tipo: string; avatar_url: string | null } | null };
-                  const entityData = pubWithPublisher.publisher?.tipo === "entidade"
-                    ? entityMap[pubWithPublisher.publisher.id] ?? null
-                    : null;
-                  return (
-                    <li key={pub.id}>
-                      <PublicationCard
-                        publication={pub}
-                        publisher={pubWithPublisher.publisher ? {
-                          nome:       pubWithPublisher.publisher.nome,
-                          tipo:       pubWithPublisher.publisher.tipo,
-                          logoUrl:    pubWithPublisher.publisher.tipo === "entidade"
-                            ? (entityData?.logo_url ?? null)
-                            : pubWithPublisher.publisher.avatar_url,
-                          verificada: entityData?.verificada ?? false,
-                        } : undefined}
-                        showFavorite={viewerId !== pub.user_id}
-                        isFavorited={favIds.has(pub.id)}
-                        isAuthenticated={!!viewerId}
-                      />
-                    </li>
-                  );
-                })}
+                {items.map((pub) => (
+                  <li key={pub.id}>
+                    <PublicationCard
+                      publication={pub}
+                      publisher={toPublisherInfo(pub.publisher, entityMap)}
+                      showFavorite={viewerId !== pub.user_id}
+                      isFavorited={favIds.has(pub.id)}
+                      isAuthenticated={!!viewerId}
+                    />
+                  </li>
+                ))}
               </ul>
               {totalPages > 1 && (
                 <nav className="mt-8 flex items-center justify-center gap-2" aria-label="Paginação">

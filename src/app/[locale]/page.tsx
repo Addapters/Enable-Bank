@@ -5,6 +5,7 @@ import { Search, MapPin, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 import { getFavoriteState } from "@/lib/favorites/queries";
+import { getEntityMap, toPublisherInfo, type RawPublisher } from "@/lib/publications/publisherInfo";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "Enable Bank — Plataforma de produtos de apoio" };
@@ -15,10 +16,10 @@ async function getFeaturedPublications() {
     const supabase = await createClient();
     const { data } = await supabase
       .from("publications")
-      .select("id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, category:categories!categoria_id(nome), photos(url, ordem)")
+      .select("id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)")
       .eq("moderacao", "ativo")
       .order("criado_em", { ascending: false })
-      .limit(5);
+      .limit(8);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (data ?? []) as any[];
   } catch {
@@ -30,6 +31,10 @@ export default async function HomePage() {
   const t = await getTranslations("home");
   const featured = await getFeaturedPublications();
   const { viewerId, favIds } = await getFavoriteState(featured.map((p) => p.id));
+  const entityMap = await getEntityMap(
+    await createClient(),
+    featured.map((p) => p.publisher as RawPublisher)
+  );
 
   // Ícones isolados de /category-icons.png via CSS sprite. As colunas da grelha de origem
   // não são igualmente espaçadas (confirmado por análise pixel a pixel dos limites reais de
@@ -75,11 +80,12 @@ export default async function HomePage() {
                 Ver todos →
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {featured.map((pub) => (
                 <PublicationCard
                   key={pub.id}
                   publication={pub}
+                  publisher={toPublisherInfo(pub.publisher as RawPublisher, entityMap)}
                   showFavorite={viewerId !== pub.user_id}
                   isFavorited={favIds.has(pub.id)}
                   isAuthenticated={!!viewerId}

@@ -54,6 +54,24 @@ body {
   z-index: 0;
 }
 
+/* Botões e controlos de formulário não mostram cursor de ponteiro por defeito no browser
+   (só os links <a> mostram). Aplica globalmente em vez de adicionar cursor-pointer a cada
+   sítio individualmente. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+select:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+label:has(input[type="checkbox"]:not(:disabled)),
+label:has(input[type="radio"]:not(:disabled)) {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 @keyframes heart-pop {
   0%   { transform: scale(1); }
   35%  { transform: scale(1.4); }
