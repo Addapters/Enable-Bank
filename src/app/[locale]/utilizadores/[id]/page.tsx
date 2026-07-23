@@ -149,7 +149,7 @@ export default async function PublicUserPage({ params }: Props) {
 
             <div>
               <h2 className="text-sm font-semibold text-gray-900 mb-2">Contacto</h2>
-              <ContactInfo userId={user.id} showDisclaimer={false} />
+              <ContactInfo userId={user.id} showDisclaimer={false} showIdentity={false} />
             </div>
           </aside>
 

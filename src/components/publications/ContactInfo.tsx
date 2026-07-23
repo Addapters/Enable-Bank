@@ -3,9 +3,9 @@ import { Mail, Phone, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PublisherAvatar from "./PublisherAvatar";
 
-type Props = { userId: string; showDisclaimer?: boolean };
+type Props = { userId: string; showDisclaimer?: boolean; showIdentity?: boolean };
 
-export default async function ContactInfo({ userId, showDisclaimer = true }: Props) {
+export default async function ContactInfo({ userId, showDisclaimer = true, showIdentity = true }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -63,7 +63,7 @@ export default async function ContactInfo({ userId, showDisclaimer = true }: Pro
   return (
     <div className="rounded-xl bg-purple-50 border border-purple-100 p-5 space-y-4">
       {/* Publisher identity */}
-      {typedPublisher && (
+      {showIdentity && typedPublisher && (
         <div>
           <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-2">
             Contactar
