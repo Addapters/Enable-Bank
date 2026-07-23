@@ -10,6 +10,8 @@ import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 import type { PublisherInfo } from "@/components/publications/PublisherAvatar";
 import { getFavoriteState } from "@/lib/favorites/queries";
+import { getReviewsForUser } from "@/lib/reviews/queries";
+import ReviewsList from "@/components/reviews/ReviewsList";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
@@ -85,6 +87,7 @@ export default async function EntityPublicPage({ params }: Props) {
 
   const pubs = (rawPubs as unknown as RawPub[]) ?? [];
   const { favIds } = await getFavoriteState(pubs.map((p) => p.id));
+  const { reviews, average, count } = await getReviewsForUser(entity.user_id);
 
   // Agrupa por categoria
   const grouped = new Map<string, { nome: string; pubs: RawPub[] }>();
@@ -280,6 +283,11 @@ export default async function EntityPublicPage({ params }: Props) {
                 </section>
               ))
             )}
+
+            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">Avaliações</h2>
+              <ReviewsList reviews={reviews} average={average} count={count} />
+            </div>
           </main>
         </div>
       </div>

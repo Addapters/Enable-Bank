@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import ContactInfo from "@/components/publications/ContactInfo";
 import PublicationCard from "@/components/publications/PublicationCard";
 import { getFavoriteState } from "@/lib/favorites/queries";
+import { getReviewsForUser } from "@/lib/reviews/queries";
+import ReviewsList from "@/components/reviews/ReviewsList";
 
 type Props = { params: Promise<{ id: string; locale: string }> };
 
@@ -85,6 +87,7 @@ export default async function PublicUserPage({ params }: Props) {
 
   const pubs = (rawPubs as unknown as RawPub[]) ?? [];
   const { favIds } = await getFavoriteState(pubs.map((p) => p.id));
+  const { reviews, average, count } = await getReviewsForUser(user.id);
 
   const registadoEm = new Date(user.criado_em).toLocaleDateString("pt-PT", {
     month: "long", year: "numeric",
@@ -180,6 +183,11 @@ export default async function PublicUserPage({ params }: Props) {
                 ))}
               </ul>
             )}
+
+            <div className="bg-white rounded-2xl border border-gray-200 p-5">
+              <h2 className="text-lg font-bold text-gray-900 mb-4">Avaliações</h2>
+              <ReviewsList reviews={reviews} average={average} count={count} />
+            </div>
           </main>
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { Bell, CheckCircle2, XCircle, Heart, PackageX, BadgeCheck } from "lucide-react";
+import { Bell, CheckCircle2, XCircle, Heart, PackageX, BadgeCheck, Star } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { NotificationRow, NotificationType } from "@/types/database";
+import { timeAgo } from "@/lib/utils/timeAgo";
 
 export const metadata: Metadata = { title: "Notificações — Enable Bank" };
 
@@ -14,19 +15,8 @@ const ICONS: Record<NotificationType, { icon: typeof Bell; className: string }> 
   favorito_novo:          { icon: Heart,         className: "bg-purple-100 text-purple-700" },
   favorito_indisponivel:  { icon: PackageX,      className: "bg-gray-100 text-gray-600" },
   entidade_verificada:    { icon: BadgeCheck,    className: "bg-purple-100 text-purple-700" },
+  nova_avaliacao:         { icon: Star,          className: "bg-purple-100 text-purple-700" },
 };
-
-function timeAgo(dateStr: string): string {
-  const diffMs = Date.now() - new Date(dateStr).getTime();
-  const min = Math.floor(diffMs / 60000);
-  if (min < 1) return "agora mesmo";
-  if (min < 60) return `há ${min} min`;
-  const hours = Math.floor(min / 60);
-  if (hours < 24) return `há ${hours}h`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `há ${days} dia${days === 1 ? "" : "s"}`;
-  return new Date(dateStr).toLocaleDateString("pt-PT", { day: "numeric", month: "long", year: "numeric" });
-}
 
 export default async function NotificacoesPage() {
   const supabase = await createClient();

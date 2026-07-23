@@ -11,6 +11,8 @@ import FavoriteButton from "@/components/publications/FavoriteButton";
 import PhotoGallery from "./PhotoGallery";
 import type { PublicationRow, CategoryRow, PhotoRow, UserRow } from "@/types/database";
 import { getFavoriteState } from "@/lib/favorites/queries";
+import { getMyReviewForPublication } from "@/lib/reviews/queries";
+import ReviewForm from "@/components/reviews/ReviewForm";
 
 type Props = { params: Promise<{ id: string; locale: string }> };
 type PublicationFull = PublicationRow & {
@@ -51,6 +53,7 @@ export default async function PublicationDetailPage({ params }: Props) {
 
   const pub = data as unknown as PublicationFull;
   const { viewerId, favIds } = await getFavoriteState([pub.id]);
+  const myReview = viewerId && viewerId !== pub.user_id ? await getMyReviewForPublication(pub.id) : null;
   const typeStyle = TYPE_STYLES[pub.tipo];
   const sortedPhotos = [...pub.photos].sort((a, b) => a.ordem - b.ordem);
   const createdAt = new Intl.DateTimeFormat("pt-PT", { day: "numeric", month: "long", year: "numeric" }).format(new Date(pub.criado_em));
@@ -131,6 +134,13 @@ export default async function PublicationDetailPage({ params }: Props) {
               </p>
             )}
           </div>
+
+          {viewerId !== pub.user_id && (
+            <div>
+              <h2 className="text-base font-semibold text-gray-900 mb-2">Avaliação</h2>
+              <ReviewForm publicationId={pub.id} isAuthenticated={!!viewerId} existingReview={myReview} />
+            </div>
+          )}
         </aside>
       </div>
     </div>
