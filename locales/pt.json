@@ -37,10 +37,10 @@
   },
   "home": {
     "hero": {
-      "title": "Uma plataforma colaborativa de doação, troca e venda de produtos de apoio — gratuita, acessível e construída para quem mais precisa.",
-      "subtitle": "Encontra o produto de apoio que precisas",
-      "searchPlaceholder": "Ex: cadeira de rodas para criança de 5 anos em Lisboa",
-      "searchButton": "Pesquisar com Banky",
+      "title": "Uma plataforma colaborativa de doação, troca e venda de produtos de apoio.",
+      "tagline": "Gratuita, acessível e construída para quem mais precisa.",
+      "searchPlaceholder": "Encontra o produto de apoio que precisas",
+      "searchButton": "Pesquisar",
       "orBrowse": "Ou explorar por categorias"
     },
     "howItWorks": {

@@ -19,6 +19,8 @@ export default function Footer() {
           <div className="col-span-2 sm:col-span-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/enable-bank-logo.png" alt="Enable Bank" className="h-8 w-auto mb-3" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logotipo_addaptersorg.png" alt="Addapters Org" className="h-6 w-auto mb-3" />
             <p className="text-sm text-gray-500">
               Uma iniciativa da <span className="font-medium text-gray-700">Addapters Org</span> — gratuita e acessível para quem mais precisa.
             </p>

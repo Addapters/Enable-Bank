@@ -56,7 +56,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-20">
           <Link href="/" className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/enable-bank-logo.png" alt="Enable Bank" className="h-9 w-auto" />
+            <img src="/enable-bank-logo.png" alt="Enable Bank" className="h-11 w-auto" />
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
@@ -72,7 +72,7 @@ export default function Navbar() {
               <>
                 <Link
                   href={profileHref}
-                  className={`flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-purple-700 ${pathname === profileHref ? "text-purple-700" : "text-gray-600"}`}
+                  className={`flex items-center gap-1.5 text-sm font-medium bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors ${pathname === profileHref ? "ring-2 ring-purple-300" : ""}`}
                   aria-label="O meu perfil"
                 >
                   <UserCircle className="w-4 h-4" aria-hidden="true" />

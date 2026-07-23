@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { Search, MapPin, ArrowRight, Heart } from "lucide-react";
+import { Search, MapPin, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 
@@ -29,28 +29,26 @@ export default async function HomePage() {
   const t = await getTranslations("home");
   const featured = await getFeaturedPublications();
 
-  // Ícones isolados de /category-icons.png (grelha 4x2) via CSS sprite (background-position)
+  // Ícones isolados de /category-icons.png via CSS sprite. As posições foram calculadas a partir
+  // do centro real de cada ícone (analisado pixel a pixel) — os ícones não estão uniformemente
+  // centrados nas suas células na imagem de origem, por isso não dá para usar um grid 4x2 simples.
   const categories = [
-    { slug: "mobilidade", iconPos: "0% 0%", label: "Mobilidade" },
-    { slug: "comunicacao", iconPos: "33.333% 0%", label: "Comunicação" },
-    { slug: "banho-higiene", iconPos: "66.667% 0%", label: "Banho e Higiene" },
-    { slug: "cama-descanso", iconPos: "100% 0%", label: "Cama e Descanso" },
-    { slug: "reabilitacao", iconPos: "0% 100%", label: "Reabilitação" },
-    { slug: "casa-ambiente", iconPos: "33.333% 100%", label: "Casa e Ambiente" },
-    { slug: "lazer-desporto", iconPos: "66.667% 100%", label: "Lazer e Desporto" },
-    { slug: "outros", iconPos: "100% 100%", label: "Outros" },
+    { slug: "mobilidade", iconPos: "0.9px -14.32px", label: "Mobilidade" },
+    { slug: "comunicacao", iconPos: "-54.55px -14.32px", label: "Comunicação" },
+    { slug: "banho-higiene", iconPos: "-114.29px -14.48px", label: "Banho e Higiene" },
+    { slug: "cama-descanso", iconPos: "-169.14px -14.63px", label: "Cama e Descanso" },
+    { slug: "reabilitacao", iconPos: "0.9px -75.12px", label: "Reabilitação" },
+    { slug: "casa-ambiente", iconPos: "-54.55px -75.12px", label: "Casa e Ambiente" },
+    { slug: "lazer-desporto", iconPos: "-114.44px -75.12px", label: "Lazer e Desporto" },
+    { slug: "outros", iconPos: "-168.23px -75.27px", label: "Outros" },
   ];
 
   return (
     <div className="flex flex-col">
       <section className="bg-gradient-to-br from-purple-700 to-purple-900 text-white py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Heart className="w-8 h-8" aria-hidden="true" />
-            <span className="text-purple-200 font-medium text-lg">Enable Bank</span>
-          </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight">{t("hero.title")}</h1>
-          <p className="text-purple-100 text-lg mb-8 max-w-2xl mx-auto">{t("hero.subtitle")}</p>
+          <p className="text-purple-100 text-lg mb-8 max-w-2xl mx-auto">{t("hero.tagline")}</p>
           <div className="max-w-2xl mx-auto">
             <form action="/pt/search" method="GET">
               <div className="flex gap-2 bg-white rounded-xl p-2 shadow-lg">
@@ -93,10 +91,10 @@ export default async function HomePage() {
                   aria-hidden="true"
                   style={{
                     backgroundImage: "url(/category-icons.png)",
-                    backgroundSize: "400% 200%",
+                    backgroundSize: "234.06px 156.04px",
                     backgroundPosition: cat.iconPos,
-                    width: 56,
-                    height: 74.67,
+                    width: 64,
+                    height: 64,
                   }}
                 />
                 <span className="text-base font-medium text-gray-700 group-hover:text-purple-700">{cat.label}</span>
@@ -112,7 +110,7 @@ export default async function HomePage() {
           <div className="relative">
             {/* Linha ondulada decorativa a ligar os passos (só desktop) */}
             <svg
-              className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 w-full h-20 -z-10 opacity-30"
+              className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 w-full h-20 opacity-30"
               viewBox="0 0 100 40"
               preserveAspectRatio="none"
               aria-hidden="true"
@@ -156,7 +154,8 @@ export default async function HomePage() {
       <section className="py-16 px-4 bg-gradient-to-br from-purple-700 to-purple-900">
         <div className="max-w-2xl mx-auto text-center">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white/15">
-            <Heart className="w-8 h-8 text-white" aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/heart-icon-white.png" alt="" className="w-8 h-8" aria-hidden="true" />
           </div>
           <h2 className="text-3xl font-bold text-white mb-3">Tens um produto de apoio que já não usas?</h2>
           <p className="text-purple-100 text-lg mb-8">Publica gratuitamente e ajuda quem precisa. Sem intermediários, sem comissões.</p>
