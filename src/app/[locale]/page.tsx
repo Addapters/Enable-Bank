@@ -3,37 +3,42 @@ import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { Search, MapPin, ArrowRight, Heart } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import PublicationCard from "@/components/publications/PublicationCard";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "Enable Bank — Plataforma de produtos de apoio" };
 }
 
-async function getStats() {
+async function getFeaturedPublications() {
   try {
     const supabase = await createClient();
-    const [{ count: publications }, { count: municipalities }] = await Promise.all([
-      supabase.from("publications").select("*", { count: "exact", head: true }).eq("moderacao", "ativo"),
-      supabase.from("publications").select("concelho", { count: "exact", head: true }).eq("moderacao", "ativo"),
-    ]);
-    return { publications: publications ?? 0, municipalities: municipalities ?? 0 };
+    const { data } = await supabase
+      .from("publications")
+      .select("id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, category:categories!categoria_id(nome), photos(url, ordem)")
+      .eq("moderacao", "ativo")
+      .order("criado_em", { ascending: false })
+      .limit(5);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (data ?? []) as any[];
   } catch {
-    return { publications: 0, municipalities: 0 };
+    return [];
   }
 }
 
 export default async function HomePage() {
   const t = await getTranslations("home");
-  const stats = await getStats();
+  const featured = await getFeaturedPublications();
 
+  // Ícones isolados de /category-icons.png (grelha 4x2) via CSS sprite (background-position)
   const categories = [
-    { slug: "mobilidade", icon: "🦽", label: "Mobilidade" },
-    { slug: "comunicacao", icon: "🗣️", label: "Comunicação" },
-    { slug: "banho-higiene", icon: "🚿", label: "Banho e Higiene" },
-    { slug: "cama-descanso", icon: "🛏️", label: "Cama e Descanso" },
-    { slug: "reabilitacao", icon: "💪", label: "Reabilitação" },
-    { slug: "casa-ambiente", icon: "🏠", label: "Casa e Ambiente" },
-    { slug: "lazer-desporto", icon: "⚽", label: "Lazer e Desporto" },
-    { slug: "outros", icon: "📦", label: "Outros" },
+    { slug: "mobilidade", iconPos: "0% 0%", label: "Mobilidade" },
+    { slug: "comunicacao", iconPos: "33.333% 0%", label: "Comunicação" },
+    { slug: "banho-higiene", iconPos: "66.667% 0%", label: "Banho e Higiene" },
+    { slug: "cama-descanso", iconPos: "100% 0%", label: "Cama e Descanso" },
+    { slug: "reabilitacao", iconPos: "0% 100%", label: "Reabilitação" },
+    { slug: "casa-ambiente", iconPos: "33.333% 100%", label: "Casa e Ambiente" },
+    { slug: "lazer-desporto", iconPos: "66.667% 100%", label: "Lazer e Desporto" },
+    { slug: "outros", iconPos: "100% 100%", label: "Outros" },
   ];
 
   return (
@@ -60,15 +65,23 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white border-b border-gray-100 py-6 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex flex-wrap justify-center gap-8 text-center">
-            <div><p className="text-2xl font-bold text-purple-700">{stats.publications}</p><p className="text-sm text-gray-500">{t("stats.products")}</p></div>
-            <div><p className="text-2xl font-bold text-purple-700">{stats.municipalities}</p><p className="text-sm text-gray-500">{t("stats.municipalities")}</p></div>
-            <div><p className="text-2xl font-bold text-purple-700">~80</p><p className="text-sm text-gray-500">{t("stats.banks")}</p></div>
+      {featured.length > 0 && (
+        <section className="py-12 px-4 bg-white border-b border-gray-100">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Novos produtos</h2>
+              <Link href="/search" className="text-sm font-medium text-purple-700 hover:underline shrink-0">
+                Ver todos →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {featured.map((pub) => (
+                <PublicationCard key={pub.id} publication={pub} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="py-12 px-4 bg-gray-50">
         <div className="max-w-5xl mx-auto">
@@ -76,48 +89,85 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {categories.map((cat) => (
               <Link key={cat.slug} href={`/search?categoria=${cat.slug}`} className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all text-center group">
-                <span className="text-3xl" role="img" aria-hidden="true">{cat.icon}</span>
-                <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">{cat.label}</span>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    backgroundImage: "url(/category-icons.png)",
+                    backgroundSize: "400% 200%",
+                    backgroundPosition: cat.iconPos,
+                    width: 56,
+                    height: 74.67,
+                  }}
+                />
+                <span className="text-base font-medium text-gray-700 group-hover:text-purple-700">{cat.label}</span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-12 px-4 bg-white">
+      <section className="py-16 px-4 bg-white overflow-hidden">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">{t("howItWorks.title")}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {(["step1", "step2", "step3"] as const).map((step, i) => (
-              <div key={step} className="flex flex-col items-center text-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-700 font-bold text-xl flex items-center justify-center">{i + 1}</div>
-                <h3 className="font-semibold text-gray-900">{t(`howItWorks.${step}.title`)}</h3>
-                <p className="text-sm text-gray-500">{t(`howItWorks.${step}.description`)}</p>
-              </div>
-            ))}
+          <h2 className="text-2xl font-bold text-gray-900 mb-16 text-center">{t("howItWorks.title")}</h2>
+          <div className="relative">
+            {/* Linha ondulada decorativa a ligar os passos (só desktop) */}
+            <svg
+              className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 w-full h-20 -z-0"
+              viewBox="0 0 100 40"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="howItWorksWave" x1="0" y1="0" x2="100%" y2="0">
+                  <stop offset="0%" stopColor="var(--color-purple-400)" />
+                  <stop offset="50%" stopColor="var(--color-purple-700)" />
+                  <stop offset="100%" stopColor="var(--color-purple-400)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0,30 C 20,30 30,10 50,10 C 70,10 80,30 100,30"
+                fill="none"
+                stroke="url(#howItWorksWave)"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+
+            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8">
+              {(["step1", "step2", "step3"] as const).map((step, i) => {
+                const shades = ["bg-purple-500", "bg-purple-700", "bg-purple-500"];
+                const lift = i === 1 ? "sm:-translate-y-8" : "sm:translate-y-8";
+                return (
+                  <div key={step} className={`flex flex-col items-center text-center gap-2 ${lift}`}>
+                    <div className={`w-16 h-16 rounded-full ${shades[i]} text-white font-bold text-2xl flex items-center justify-center shadow-lg shadow-purple-200`}>
+                      {i + 1}
+                    </div>
+                    <span className="text-xs font-semibold text-purple-700 uppercase tracking-wide">Passo {i + 1}</span>
+                    <h3 className="font-semibold text-gray-900">{t(`howItWorks.${step}.title`)}</h3>
+                    <p className="text-sm text-gray-500 max-w-[220px]">{t(`howItWorks.${step}.description`)}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-12 px-4 bg-purple-50">
+      <section className="py-16 px-4 bg-gradient-to-br from-purple-700 to-purple-900">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">Tens um produto de apoio que já não usas?</h2>
-          <p className="text-gray-600 mb-6">Publica gratuitamente e ajuda quem precisa. Sem intermediários, sem comissões.</p>
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white/15">
+            <Heart className="w-8 h-8 text-white" aria-hidden="true" />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-3">Tens um produto de apoio que já não usas?</h2>
+          <p className="text-purple-100 text-lg mb-8">Publica gratuitamente e ajuda quem precisa. Sem intermediários, sem comissões.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/publications/new" className="flex items-center justify-center gap-2 bg-purple-700 text-white px-6 py-3 rounded-xl font-medium hover:bg-purple-800 transition-colors">
+            <Link href="/publications/new" className="flex items-center justify-center gap-2 bg-white text-purple-700 px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-purple-50 transition-colors">
               Publicar anúncio<ArrowRight className="w-4 h-4" aria-hidden="true" />
             </Link>
-            <Link href="/map" className="flex items-center justify-center gap-2 border border-purple-300 text-purple-700 px-6 py-3 rounded-xl font-medium hover:bg-purple-50 transition-colors">
+            <Link href="/map" className="flex items-center justify-center gap-2 border border-white/40 text-white px-6 py-3 rounded-xl font-medium hover:bg-white/10 transition-colors">
               <MapPin className="w-4 h-4" aria-hidden="true" />Ver no mapa
             </Link>
           </div>
-        </div>
-      </section>
-
-      <section className="py-10 px-4 bg-white border-t border-gray-100">
-        <div className="max-w-2xl mx-auto text-center">
-          <blockquote className="text-lg italic text-gray-600">&ldquo;O tempo é essencial, e juntos podemos garantir que está sempre do lado das nossas crianças.&rdquo;</blockquote>
-          <p className="mt-3 text-sm font-medium text-purple-700">Isabel Cavaca — Addapters Org, Presidente</p>
         </div>
       </section>
     </div>

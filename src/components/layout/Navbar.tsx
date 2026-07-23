@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Menu, X, Heart, UserCircle } from "lucide-react";
+import { Menu, X, UserCircle } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
@@ -53,10 +53,10 @@ export default function Navbar() {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Navegação principal">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl text-purple-700">
-            <Heart className="w-6 h-6" aria-hidden="true" />
-            <span>Enable Bank</span>
+        <div className="flex items-center justify-between h-20">
+          <Link href="/" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/enable-bank-logo.png" alt="Enable Bank" className="h-9 w-auto" />
           </Link>
 
           <div className="hidden md:flex items-center gap-6">
