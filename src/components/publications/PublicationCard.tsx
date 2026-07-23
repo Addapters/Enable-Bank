@@ -107,7 +107,6 @@ export default function PublicationCard({ publication, publisher, showFavorite, 
                   publicationId={publication.id}
                   initialFavorited={!!isFavorited}
                   isAuthenticated={!!isAuthenticated}
-                  size={20}
                   variant="plain"
                 />
               )}

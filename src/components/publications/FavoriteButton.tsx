@@ -10,14 +10,16 @@ interface Props {
   initialFavorited: boolean;
   isAuthenticated: boolean;
   className?: string;
-  /** Tamanho do botão em px. Default: 32 */
+  /** Tamanho do botão em px. Default: 30 */
   size?: number;
+  /** Tamanho do ícone do coração em px. Default: 20 */
+  iconSize?: number;
   /** "solid" = círculo branco com sombra (para sobrepor a fotos); "plain" = só o ícone, sem fundo. Default: "solid" */
   variant?: "solid" | "plain";
 }
 
 export default function FavoriteButton({
-  publicationId, initialFavorited, isAuthenticated, className, size = 32, variant = "solid",
+  publicationId, initialFavorited, isAuthenticated, className, size = 30, iconSize = 20, variant = "solid",
 }: Props) {
   const [favorited, setFavorited] = useState(initialFavorited);
   const [justAdded, setJustAdded] = useState(false);
@@ -42,8 +44,6 @@ export default function FavoriteButton({
       if (!result.success) setFavorited(!next); // reverte em caso de erro
     });
   };
-
-  const iconSize = Math.round(size * 0.6);
 
   return (
     <button

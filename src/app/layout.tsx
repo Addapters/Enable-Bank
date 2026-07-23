@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
+import { Nunito } from "next/font/google";
 import "./globals.css";
+
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-nunito",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: { default: "Enable Bank", template: "%s | Enable Bank" },
@@ -16,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt" className="h-full">
+    <html lang="pt" className={`h-full ${nunito.variable}`}>
       <body className="min-h-full flex flex-col antialiased">{children}</body>
     </html>
   );
