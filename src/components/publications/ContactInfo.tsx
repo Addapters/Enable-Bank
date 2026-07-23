@@ -31,15 +31,15 @@ export default async function ContactInfo({ userId, showDisclaimer = true, showI
 
   const { data: publisher } = await supabase
     .from("users")
-    .select("nome, tipo")
+    .select("nome, tipo, avatar_url")
     .eq("id", userId)
     .single();
 
   const typedContact = contact as { email_contacto: string; telefone: string | null } | null;
-  const typedPublisher = publisher as { nome: string; tipo: string } | null;
+  const typedPublisher = publisher as { nome: string; tipo: string; avatar_url: string | null } | null;
 
-  // Para entidades, busca logo + verificada
-  let logoUrl: string | null = null;
+  // Para entidades, busca logo + verificada; para particulares, usa o avatar do perfil
+  let logoUrl: string | null = typedPublisher?.avatar_url ?? null;
   let isVerified = false;
   if (typedPublisher?.tipo === "entidade") {
     const { data: ent } = await supabase

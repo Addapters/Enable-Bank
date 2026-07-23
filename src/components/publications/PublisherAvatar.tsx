@@ -34,7 +34,7 @@ export default function PublisherAvatar({
   className = "",
 }: Props) {
   const isEntity = publisher.tipo === "entidade";
-  const hasLogo  = isEntity && !!publisher.logoUrl;
+  const hasLogo  = !!publisher.logoUrl;
 
   const avatar = (
     <div

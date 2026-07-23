@@ -132,13 +132,13 @@ export default function SearchFilters({ categories }: Props) {
         <legend className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Entidades</legend>
 
         {/* Apenas verificadas */}
-        <label className="flex items-center gap-2 cursor-pointer group mb-3">
+        <label className="flex items-start gap-2 cursor-pointer group mb-3">
           <input type="checkbox" checked={currentVerificada === "true"}
             onChange={(e) => updateParam("entidade_verificada", e.target.checked ? "true" : null)}
-            className="accent-purple-700 w-4 h-4 rounded" />
-          <span className="text-sm text-gray-700 group-hover:text-purple-700 flex items-center gap-1">
-            <BadgeCheck className="w-3.5 h-3.5 text-purple-600" aria-hidden="true" />
-            Apenas entidades verificadas
+            className="accent-purple-700 w-4 h-4 rounded shrink-0 mt-0.5" />
+          <span className="text-sm text-gray-700 group-hover:text-purple-700 flex items-start gap-1 min-w-0">
+            <BadgeCheck className="w-3.5 h-3.5 text-purple-600 shrink-0 mt-0.5" aria-hidden="true" />
+            <span className="min-w-0">Apenas entidades verificadas</span>
           </span>
         </label>
 
@@ -153,7 +153,7 @@ export default function SearchFilters({ categories }: Props) {
               defaultValue={currentEntidade}
               onKeyDown={handleEntidadeSearch}
               placeholder="Ex: Addapters Org"
-              className="flex-1 text-sm border border-gray-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-600 text-gray-700"
+              className="flex-1 min-w-0 text-sm border border-gray-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-purple-600 text-gray-700"
             />
             <button
               type="button"

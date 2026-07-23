@@ -1,5 +1,5 @@
 import { Link } from "@/i18n/navigation";
-import { MapPin, Clock, Tag } from "lucide-react";
+import { MapPin, Clock, Tag, PackageCheck } from "lucide-react";
 import { clsx } from "clsx";
 import type { PublicationRow, CategoryRow, PhotoRow } from "@/types/database";
 import PublisherAvatar, { type PublisherInfo } from "./PublisherAvatar";
@@ -94,7 +94,7 @@ export default function PublicationCard({ publication, publisher, showFavorite, 
               <Clock className="w-3 h-3" aria-hidden="true" />{AUDIENCE_LABELS[publication.publico]}
             </span>
             <span className="flex items-center gap-1">
-              {CONDITION_LABELS[publication.estado]}
+              <PackageCheck className="w-3 h-3" aria-hidden="true" />{CONDITION_LABELS[publication.estado]}
             </span>
           </div>
 
@@ -111,7 +111,7 @@ export default function PublicationCard({ publication, publisher, showFavorite, 
                 />
               )}
             </div>
-            <span className="text-xs font-medium text-purple-700 group-hover:underline shrink-0">
+            <span className="text-xs font-medium bg-purple-700 text-white px-3 py-1.5 rounded-lg shrink-0">
               Ver →
             </span>
           </div>

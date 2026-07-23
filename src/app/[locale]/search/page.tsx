@@ -27,7 +27,7 @@ async function getResults(params: SearchParams) {
 
   let query = supabase
     .from("publications")
-    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo)`, { count: "exact" })
+    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)`, { count: "exact" })
     .eq("moderacao", "ativo")
     .order("criado_em", { ascending: false })
     .range(from, to);
@@ -90,7 +90,7 @@ async function getResults(params: SearchParams) {
   type RawItem = PublicationRow & {
     category: { nome: string } | null;
     photos: { url: string; ordem: number }[];
-    publisher: { id: string; nome: string; tipo: string } | null;
+    publisher: { id: string; nome: string; tipo: string; avatar_url: string | null } | null;
   };
   const items = (data ?? []) as unknown as RawItem[];
 
@@ -130,7 +130,7 @@ export default async function SearchPage({ searchParams }: Props) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
         <form method="GET" action="">
-          <div className="flex gap-2 bg-white border border-gray-200 rounded-xl p-2 shadow-sm max-w-2xl">
+          <div className="flex gap-2 bg-white border border-gray-200 rounded-xl p-2 shadow-sm">
             <div className="flex-1 flex items-center gap-2 px-3">
               <Search className="w-5 h-5 text-gray-400 shrink-0" aria-hidden="true" />
               <input type="text" name="q" defaultValue={params.q ?? ""} placeholder={t("placeholder")} className="w-full text-gray-900 placeholder-gray-400 outline-none text-sm" aria-label={t("placeholder")} />
@@ -147,8 +147,8 @@ export default async function SearchPage({ searchParams }: Props) {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        <aside className="lg:w-56 shrink-0" aria-label="Filtros de pesquisa">
-          <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-20">
+        <aside className="lg:w-64 shrink-0" aria-label="Filtros de pesquisa">
+          <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-24">
             <Suspense fallback={null}><SearchFilters categories={categories} /></Suspense>
           </div>
         </aside>
@@ -183,7 +183,7 @@ export default async function SearchPage({ searchParams }: Props) {
             <>
               <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" aria-label="Resultados da pesquisa">
                 {items.map((pub) => {
-                  const pubWithPublisher = pub as typeof pub & { publisher: { id: string; nome: string; tipo: string } | null };
+                  const pubWithPublisher = pub as typeof pub & { publisher: { id: string; nome: string; tipo: string; avatar_url: string | null } | null };
                   const entityData = pubWithPublisher.publisher?.tipo === "entidade"
                     ? entityMap[pubWithPublisher.publisher.id] ?? null
                     : null;
@@ -194,7 +194,9 @@ export default async function SearchPage({ searchParams }: Props) {
                         publisher={pubWithPublisher.publisher ? {
                           nome:       pubWithPublisher.publisher.nome,
                           tipo:       pubWithPublisher.publisher.tipo,
-                          logoUrl:    entityData?.logo_url ?? null,
+                          logoUrl:    pubWithPublisher.publisher.tipo === "entidade"
+                            ? (entityData?.logo_url ?? null)
+                            : pubWithPublisher.publisher.avatar_url,
                           verificada: entityData?.verificada ?? false,
                         } : undefined}
                         showFavorite={viewerId !== pub.user_id}
