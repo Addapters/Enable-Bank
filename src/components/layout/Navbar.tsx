@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Menu, X, UserCircle, Plus, Bell } from "lucide-react";
+import { Menu, X, UserCircle, Plus, Bell, MessageCircle } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
@@ -14,6 +14,7 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
+  const [msgCount, setMsgCount] = useState(0);
   const supabase = createClient();
 
   useEffect(() => {
@@ -28,6 +29,9 @@ export default function Navbar() {
         supabase.from("notifications").select("id", { count: "exact", head: true })
           .eq("user_id", data.user.id).eq("lida", false)
           .then(({ count }) => setNotifCount(count ?? 0));
+        supabase.from("messages").select("id", { count: "exact", head: true })
+          .eq("lida", false).neq("sender_id", data.user.id)
+          .then(({ count }) => setMsgCount(count ?? 0));
       }
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
@@ -79,6 +83,19 @@ export default function Navbar() {
                 >
                   <Plus className="w-4 h-4" aria-hidden="true" />
                   {t("publish")}
+                </Link>
+
+                <Link
+                  href="/mensagens"
+                  className="relative p-2 rounded-lg text-gray-600 hover:text-purple-700 hover:bg-gray-100 transition-colors"
+                  aria-label={`Mensagens${msgCount > 0 ? ` (${msgCount} não lidas)` : ""}`}
+                >
+                  <MessageCircle className="w-5 h-5" aria-hidden="true" />
+                  {msgCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-purple-700 text-white text-[10px] font-semibold flex items-center justify-center" aria-hidden="true">
+                      {msgCount > 9 ? "9+" : msgCount}
+                    </span>
+                  )}
                 </Link>
 
                 <div className="relative group">
@@ -145,6 +162,10 @@ export default function Navbar() {
                   </Link>
                   <Link href={publicProfileHref} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
                     <UserCircle className="w-4 h-4" aria-hidden="true" />Ver perfil
+                  </Link>
+                  <Link href="/mensagens" className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
+                    <MessageCircle className="w-4 h-4" aria-hidden="true" />
+                    Mensagens{msgCount > 0 ? ` (${msgCount})` : ""}
                   </Link>
                   <Link href="/notificacoes" className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
                     <Bell className="w-4 h-4" aria-hidden="true" />

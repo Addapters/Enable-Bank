@@ -113,7 +113,8 @@ export type NotificationType =
   | "favorito_novo"
   | "favorito_indisponivel"
   | "entidade_verificada"
-  | "nova_avaliacao";
+  | "nova_avaliacao"
+  | "nova_mensagem";
 
 export interface NotificationRow {
   id: string;
@@ -139,6 +140,26 @@ export interface ReviewRow {
   atualizado_em: string;
 }
 
+export interface ConversationRow {
+  id: string;
+  user_a: string;
+  user_b: string;
+  publication_id: string | null;
+  publication_titulo: string | null;
+  last_message_at: string | null;
+  criado_em: string;
+}
+
+export interface MessageRow {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  conteudo: string;
+  lida: boolean;
+  lida_em: string | null;
+  criado_em: string;
+}
+
 export type User = UserRow;
 export type Entity = EntityRow;
 export type Category = CategoryRow;
@@ -149,6 +170,8 @@ export type ModerationLog = ModerationLogRow;
 export type Favorite = FavoriteRow;
 export type Notification = NotificationRow;
 export type Review = ReviewRow;
+export type Conversation = ConversationRow;
+export type Message = MessageRow;
 
 export type PublicationWithDetails = PublicationRow & {
   photos: PhotoRow[];

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { Bell, CheckCircle2, XCircle, Heart, PackageX, BadgeCheck, Star } from "lucide-react";
+import { Bell, CheckCircle2, XCircle, Heart, PackageX, BadgeCheck, Star, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import type { NotificationRow, NotificationType } from "@/types/database";
 import { timeAgo } from "@/lib/utils/timeAgo";
@@ -16,6 +16,7 @@ const ICONS: Record<NotificationType, { icon: typeof Bell; className: string }> 
   favorito_indisponivel:  { icon: PackageX,      className: "bg-gray-100 text-gray-600" },
   entidade_verificada:    { icon: BadgeCheck,    className: "bg-purple-100 text-purple-700" },
   nova_avaliacao:         { icon: Star,          className: "bg-purple-100 text-purple-700" },
+  nova_mensagem:          { icon: MessageCircle, className: "bg-purple-100 text-purple-700" },
 };
 
 export default async function NotificacoesPage() {
