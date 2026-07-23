@@ -44,7 +44,6 @@ export default function Navbar() {
     { href: "/map", label: "Mapa" },
     { href: "/entidades", label: "Entidades" },
     ...(user ? [{ href: "/publications/new", label: t("publish") }] : []),
-    ...(user ? [{ href: "/dashboard", label: t("dashboard") }] : []),
     ...(isAdmin ? [{ href: "/admin", label: t("admin") }] : []),
   ];
 
@@ -69,7 +68,7 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <>
+              <div className="relative group">
                 <Link
                   href={profileHref}
                   className={`flex items-center gap-1.5 text-sm font-medium bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors ${pathname === profileHref ? "ring-2 ring-purple-300" : ""}`}
@@ -78,8 +77,26 @@ export default function Navbar() {
                   <UserCircle className="w-4 h-4" aria-hidden="true" />
                   Perfil
                 </Link>
-                <button onClick={handleLogout} className="text-sm font-medium text-gray-600 hover:text-purple-700 transition-colors">{t("logout")}</button>
-              </>
+
+                {/* Submenu — aparece ao passar o rato (padding-top mantém a área "hoverable" contínua) */}
+                <div className="absolute right-0 top-full w-52 pt-2 invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-150 z-50">
+                  <div className="bg-white rounded-xl border border-gray-200 shadow-lg py-1.5">
+                    <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-purple-700 transition-colors">
+                      Os meus anúncios
+                    </Link>
+                    <Link href="/favoritos" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-purple-700 transition-colors">
+                      Os meus favoritos
+                    </Link>
+                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-purple-700 transition-colors">
+                      Editar perfil
+                    </Link>
+                    <div className="my-1 border-t border-gray-100" />
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-purple-700 transition-colors">
+                      {t("logout")}
+                    </button>
+                  </div>
+                </div>
+              </div>
             ) : (
               <>
                 <Link href="/auth/login" className="text-sm font-medium text-gray-600 hover:text-purple-700 transition-colors">{t("login")}</Link>
@@ -101,8 +118,14 @@ export default function Navbar() {
             <div className="border-t border-gray-200 pt-3 mt-3 space-y-1">
               {user ? (
                 <>
+                  <Link href="/dashboard" className="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
+                    Os meus anúncios
+                  </Link>
+                  <Link href="/favoritos" className="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
+                    Os meus favoritos
+                  </Link>
                   <Link href={profileHref} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
-                    <UserCircle className="w-4 h-4" aria-hidden="true" />Perfil
+                    <UserCircle className="w-4 h-4" aria-hidden="true" />Editar perfil
                   </Link>
                   <button onClick={handleLogout} className="block w-full text-left px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md">{t("logout")}</button>
                 </>
