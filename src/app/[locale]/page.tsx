@@ -29,19 +29,19 @@ export default async function HomePage() {
   const t = await getTranslations("home");
   const featured = await getFeaturedPublications();
 
-  // Ícones isolados de /category-icons.png via CSS sprite. O recorte de cada ícone é sempre
-  // uma célula inteira da grelha 4x2 (nunca mais largo/alto que a célula), para garantir que
-  // nunca aparecem pedaços de ícones vizinhos; o deslocamento vertical dentro da célula foi
-  // ajustado a partir do centro real de cada ícone (analisado pixel a pixel).
+  // Ícones isolados de /category-icons.png via CSS sprite. As colunas da grelha de origem
+  // não são igualmente espaçadas (confirmado por análise pixel a pixel dos limites reais de
+  // cada ícone), por isso as posições usam os limites de coluna detetados em vez de um grid
+  // 4x2 uniforme — caso contrário aparecem pedaços de ícones vizinhos ou cortam-se ícones.
   const categories = [
     { slug: "mobilidade", iconPos: "0px -18.67px", label: "Mobilidade" },
-    { slug: "comunicacao", iconPos: "-64px -18.67px", label: "Comunicação" },
-    { slug: "banho-higiene", iconPos: "-128px -18.83px", label: "Banho e Higiene" },
-    { slug: "cama-descanso", iconPos: "-192px -19px", label: "Cama e Descanso" },
+    { slug: "comunicacao", iconPos: "-64.375px -18.67px", label: "Comunicação" },
+    { slug: "banho-higiene", iconPos: "-125.625px -18.83px", label: "Banho e Higiene" },
+    { slug: "cama-descanso", iconPos: "-187.375px -19px", label: "Cama e Descanso" },
     { slug: "reabilitacao", iconPos: "0px -85.33px", label: "Reabilitação" },
-    { slug: "casa-ambiente", iconPos: "-64px -85.33px", label: "Casa e Ambiente" },
-    { slug: "lazer-desporto", iconPos: "-128px -85.33px", label: "Lazer e Desporto" },
-    { slug: "outros", iconPos: "-192px -85.33px", label: "Outros" },
+    { slug: "casa-ambiente", iconPos: "-64.375px -85.33px", label: "Casa e Ambiente" },
+    { slug: "lazer-desporto", iconPos: "-125.625px -85.33px", label: "Lazer e Desporto" },
+    { slug: "outros", iconPos: "-187.375px -85.33px", label: "Outros" },
   ];
 
   return (
