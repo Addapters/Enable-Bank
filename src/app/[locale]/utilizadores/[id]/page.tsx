@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { MapPin, Package, ChevronLeft } from "lucide-react";
+import { MapPin, Package, ChevronLeft, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ContactInfo from "@/components/publications/ContactInfo";
 import PublicationCard from "@/components/publications/PublicationCard";
@@ -55,6 +55,9 @@ export default async function PublicUserPage({ params }: Props) {
 
   const user = await getPublicUser(id);
   if (!user) notFound();
+
+  const { data: { user: viewer } } = await supabase.auth.getUser();
+  const isOwnProfile = viewer?.id === user.id;
 
   // Entidades têm a sua própria página pública (com NIF, morada, verificação, etc.) — redireciona.
   if (user.tipo === "entidade") {
@@ -111,6 +114,15 @@ export default async function PublicUserPage({ params }: Props) {
                   />
                 </div>
                 <h1 className="text-xl font-bold text-gray-900">{user.nome}</h1>
+                {isOwnProfile && (
+                  <Link
+                    href="/profile"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium bg-purple-700 text-white px-3 py-1.5 rounded-lg hover:bg-purple-800 transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                    Editar perfil
+                  </Link>
+                )}
               </div>
 
               <dl className="space-y-2.5 text-sm border-t border-gray-100 pt-4">
@@ -137,7 +149,7 @@ export default async function PublicUserPage({ params }: Props) {
 
             <div>
               <h2 className="text-sm font-semibold text-gray-900 mb-2">Contacto</h2>
-              <ContactInfo userId={user.id} />
+              <ContactInfo userId={user.id} showDisclaimer={false} />
             </div>
           </aside>
 
@@ -153,7 +165,7 @@ export default async function PublicUserPage({ params }: Props) {
                 <p className="text-sm text-gray-500">Este utilizador ainda não tem anúncios ativos.</p>
               </div>
             ) : (
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {pubs.map((pub) => (
                   <li key={pub.id}>
                     <PublicationCard publication={pub as never} />

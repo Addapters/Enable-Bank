@@ -3,9 +3,9 @@ import { Mail, Phone, Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PublisherAvatar from "./PublisherAvatar";
 
-type Props = { userId: string };
+type Props = { userId: string; showDisclaimer?: boolean };
 
-export default async function ContactInfo({ userId }: Props) {
+export default async function ContactInfo({ userId, showDisclaimer = true }: Props) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -14,7 +14,7 @@ export default async function ContactInfo({ userId }: Props) {
       <div className="rounded-xl border-2 border-dashed border-gray-200 p-5 text-center">
         <Lock className="w-8 h-8 text-gray-300 mx-auto mb-2" aria-hidden="true" />
         <p className="text-sm font-medium text-gray-700 mb-1">Contacto visível apenas para membros</p>
-        <p className="text-xs text-gray-400 mb-4">Regista-te gratuitamente para ver os dados de contacto do publisher.</p>
+        <p className="text-xs text-gray-400 mb-4">Regista-te gratuitamente para ver os dados de contacto.</p>
         <div className="flex flex-col gap-2">
           <Link href="/auth/login" className="block w-full bg-purple-700 text-white text-sm font-medium py-2 rounded-lg hover:bg-purple-800 transition-colors text-center">Entrar</Link>
           <Link href="/auth/register" className="block w-full border border-purple-200 text-purple-700 text-sm font-medium py-2 rounded-lg hover:bg-purple-50 transition-colors text-center">Criar conta gratuita</Link>
@@ -55,7 +55,7 @@ export default async function ContactInfo({ userId }: Props) {
   if (!typedContact) {
     return (
       <div className="rounded-xl bg-gray-50 border border-gray-200 p-5 text-center">
-        <p className="text-sm text-gray-500">O publisher ainda não adicionou dados de contacto.</p>
+        <p className="text-sm text-gray-500">Ainda não foram adicionados dados de contacto.</p>
       </div>
     );
   }
@@ -66,7 +66,7 @@ export default async function ContactInfo({ userId }: Props) {
       {typedPublisher && (
         <div>
           <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-2">
-            Contactar publisher
+            Contactar
           </p>
           <Link href={`/utilizadores/${userId}`} className="inline-block hover:opacity-80 transition-opacity">
             <PublisherAvatar
@@ -136,9 +136,11 @@ export default async function ContactInfo({ userId }: Props) {
         )}
       </div>
 
-      <p className="text-xs text-gray-400 text-center">
-        O contacto é direto entre ti e o publisher. A plataforma não intermedeia.
-      </p>
+      {showDisclaimer && (
+        <p className="text-xs text-gray-400 text-center">
+          O contacto é direto entre ti e o anunciante. A plataforma não intermedeia.
+        </p>
+      )}
     </div>
   );
 }
