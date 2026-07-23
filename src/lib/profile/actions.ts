@@ -34,6 +34,7 @@ export async function updateParticularProfile(
   const nome = (formData.get("nome") as string)?.trim();
   const concelho = (formData.get("concelho") as string)?.trim();
   const telefone = (formData.get("telefone") as string)?.trim() || null;
+  const avatar_url = (formData.get("avatar_url") as string)?.trim() || null;
 
   const fields: Record<string, string> = {};
   if (!nome) fields.nome = "O nome é obrigatório.";
@@ -42,7 +43,7 @@ export async function updateParticularProfile(
 
   const { error: userErr } = await supabase
     .from("users")
-    .update({ nome, concelho, telefone })
+    .update({ nome, concelho, telefone, avatar_url })
     .eq("id", user.id);
 
   if (userErr) return { error: "Erro ao guardar o perfil." };

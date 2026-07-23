@@ -14,6 +14,7 @@ export interface UserRow {
   role: UserRole;
   concelho: string | null;
   telefone: string | null;
+  avatar_url: string | null;
   suspended: boolean;
   criado_em: string;
   atualizado_em: string;

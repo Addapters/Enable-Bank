@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { Link } from "@/i18n/navigation";
-import { UserCircle, Building2, BadgeCheck } from "lucide-react";
+import { Building2, BadgeCheck } from "lucide-react";
 import ParticularProfileForm from "./ParticularProfileForm";
 import EntityProfileForm from "./EntityProfileForm";
 
@@ -34,7 +34,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("id, nome, tipo, concelho, telefone, role")
+    .select("id, nome, tipo, concelho, telefone, role, avatar_url")
     .eq("id", user.id)
     .single();
 
@@ -43,6 +43,7 @@ export default async function ProfilePage() {
   const p = profile as {
     id: string; nome: string; tipo: string;
     concelho: string | null; telefone: string | null; role: string;
+    avatar_url: string | null;
   };
 
   // Dados de entidade (se aplicável)
@@ -72,12 +73,15 @@ export default async function ProfilePage() {
           </Link>
 
           <div className="flex items-center gap-4">
-            <div className={`flex h-14 w-14 items-center justify-center rounded-2xl shrink-0 ${
+            <div className={`flex h-14 w-14 items-center justify-center rounded-2xl shrink-0 overflow-hidden ${
               isParticular ? "bg-purple-100" : "bg-blue-100"
             }`}>
-              {isParticular
-                ? <UserCircle className="w-7 h-7 text-purple-700" aria-hidden="true" />
-                : <Building2 className="w-7 h-7 text-blue-700" aria-hidden="true" />}
+              {isParticular ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={p.avatar_url ?? "/heart-icon.png"} alt="" className="w-full h-full object-cover" aria-hidden="true" />
+              ) : (
+                <Building2 className="w-7 h-7 text-blue-700" aria-hidden="true" />
+              )}
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
@@ -104,6 +108,7 @@ export default async function ProfilePage() {
               defaultEmail={user.email ?? ""}
               defaultConcelho={p.concelho}
               defaultTelefone={p.telefone}
+              defaultAvatarUrl={p.avatar_url}
             />
           ) : (
             <EntityProfileForm

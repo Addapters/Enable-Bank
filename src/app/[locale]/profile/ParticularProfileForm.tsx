@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { CheckCircle, Loader2 } from "lucide-react";
 import FormField from "@/components/ui/FormField";
+import LogoUpload from "./LogoUpload";
 import { updateParticularProfile } from "@/lib/profile/actions";
 import { CONCELHOS } from "@/lib/data/concelhos";
 import type { ProfileResult } from "@/lib/profile/actions";
@@ -12,6 +13,7 @@ interface Props {
   defaultEmail: string;
   defaultConcelho: string | null;
   defaultTelefone: string | null;
+  defaultAvatarUrl: string | null;
 }
 
 export default function ParticularProfileForm({
@@ -19,24 +21,49 @@ export default function ParticularProfileForm({
   defaultEmail,
   defaultConcelho,
   defaultTelefone,
+  defaultAvatarUrl,
 }: Props) {
-  const [state, action, pending] = useActionState<ProfileResult | null, FormData>(
+  const [state, action] = useActionState<ProfileResult | null, FormData>(
     updateParticularProfile, null
   );
+  const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [prevState, setPrevState] = useState(state);
+  const [avatarUrl, setAvatarUrl] = useState<string>(defaultAvatarUrl ?? "");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Deteta uma nova submissão bem-sucedida durante a renderização (em vez de num efeito) para
+  // não disparar setState sincronamente no corpo do efeito; o próprio timeout do auto-hide é
+  // que fica num efeito, já que aí a atualização acontece de forma assíncrona (permitido).
+  if (state !== prevState) {
+    setPrevState(state);
+    if (state && "success" in state) setSaved(true);
+  }
 
   useEffect(() => {
-    if (state && "success" in state) {
-      setSaved(true);
-      const t = setTimeout(() => setSaved(false), 3000);
-      return () => clearTimeout(t);
-    }
-  }, [state]);
+    if (!saved) return;
+    const t = setTimeout(() => setSaved(false), 3000);
+    return () => clearTimeout(t);
+  }, [saved]);
 
   const fields = (state && "fields" in state ? state.fields : {}) ?? {};
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(formRef.current!);
+    fd.set("avatar_url", avatarUrl);
+    startTransition(() => action(fd));
+  };
+
   return (
-    <form action={action} className="space-y-5">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
+
+      <LogoUpload
+        currentUrl={defaultAvatarUrl}
+        onUpload={setAvatarUrl}
+        label="Foto de perfil"
+        placeholderUrl="/heart-icon.png"
+      />
 
       <FormField
         id="nome"

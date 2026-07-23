@@ -12,6 +12,10 @@ const OUTPUT_SIZE = 400;                    // px — redimensionamento alvo
 interface Props {
   currentUrl?: string | null;
   onUpload: (url: string) => void;
+  /** Texto do rótulo acima da área de upload. Default: "Logo da organização" */
+  label?: string;
+  /** Imagem mostrada como preview quando ainda não há currentUrl (ex: avatar por defeito) */
+  placeholderUrl?: string;
 }
 
 // ── Valida formato, tamanho e dimensões mínimas; devolve erro ou null ─────────
@@ -80,8 +84,8 @@ function resizeToSquare(file: File): Promise<Blob> {
 }
 
 // ── Componente ────────────────────────────────────────────────────────────────
-export default function LogoUpload({ currentUrl, onUpload }: Props) {
-  const [preview, setPreview] = useState<string | null>(currentUrl ?? null);
+export default function LogoUpload({ currentUrl, onUpload, label = "Logo da organização", placeholderUrl }: Props) {
+  const [preview, setPreview] = useState<string | null>(currentUrl ?? placeholderUrl ?? null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState<"idle" | "validating" | "resizing" | "uploading" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
@@ -128,7 +132,7 @@ export default function LogoUpload({ currentUrl, onUpload }: Props) {
 
     if (upErr || !data) {
       setError("Erro ao enviar a imagem para o servidor. Tenta novamente.");
-      setPreview(currentUrl ?? null);   // reverte preview
+      setPreview(currentUrl ?? placeholderUrl ?? null);   // reverte preview
       URL.revokeObjectURL(localPreview);
       setUploading(false);
       setProgress("idle");
@@ -154,7 +158,7 @@ export default function LogoUpload({ currentUrl, onUpload }: Props) {
   };
 
   const handleRemove = () => {
-    setPreview(null);
+    setPreview(placeholderUrl ?? null);
     setError(null);
     setProgress("idle");
     onUpload("");
@@ -169,10 +173,12 @@ export default function LogoUpload({ currentUrl, onUpload }: Props) {
     done:       "Carregado com sucesso!",
   };
 
+  const isPlaceholder = !currentUrl && !!placeholderUrl && preview === placeholderUrl;
+
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-gray-700">
-        Logo da organização{" "}
+        {label}{" "}
         <span className="text-gray-400 font-normal">(opcional)</span>
       </label>
       <p className="text-xs text-gray-400">
@@ -185,7 +191,7 @@ export default function LogoUpload({ currentUrl, onUpload }: Props) {
           <div className="shrink-0 w-16 h-16 rounded-lg border border-gray-200 overflow-hidden bg-white flex items-center justify-center">
             <Image
               src={preview}
-              alt="Logo atual"
+              alt={label}
               width={64}
               height={64}
               className="object-contain w-full h-full"
@@ -195,25 +201,27 @@ export default function LogoUpload({ currentUrl, onUpload }: Props) {
             {progress === "done" ? (
               <p className="text-xs text-green-600 flex items-center gap-1 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-                Logo carregado e redimensionado para 400×400 px
+                Carregado e redimensionado para 400×400 px
               </p>
             ) : (
-              <p className="text-xs text-gray-500">Logo atual</p>
+              <p className="text-xs text-gray-500">{isPlaceholder ? "Imagem por defeito" : "Imagem atual"}</p>
             )}
-            <button
-              type="button"
-              onClick={handleRemove}
-              className="mt-1.5 flex items-center gap-1 text-xs text-red-500 hover:text-red-700 transition-colors"
-            >
-              <X className="w-3.5 h-3.5" aria-hidden="true" />
-              Remover logo
-            </button>
+            {!isPlaceholder && (
+              <button
+                type="button"
+                onClick={handleRemove}
+                className="mt-1.5 flex items-center gap-1 text-xs text-red-500 hover:text-red-700 transition-colors"
+              >
+                <X className="w-3.5 h-3.5" aria-hidden="true" />
+                Remover
+              </button>
+            )}
           </div>
         </div>
       )}
 
-      {/* ── Drop zone (só visível sem preview ou durante upload) ─ */}
-      {(!preview || uploading) && (
+      {/* ── Drop zone (só visível sem imagem guardada ou durante upload) ─ */}
+      {(!currentUrl || uploading) && (
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}

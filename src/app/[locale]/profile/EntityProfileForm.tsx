@@ -46,16 +46,23 @@ export default function EntityProfileForm({ defaultEmail, entity }: Props) {
   );
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState(false);
+  const [prevState, setPrevState] = useState(state);
   const [logoUrl, setLogoUrl] = useState<string>(entity?.logo_url ?? "");
   const formRef = useRef<HTMLFormElement>(null);
 
+  // Deteta uma nova submissão bem-sucedida durante a renderização (em vez de num efeito) para
+  // não disparar setState sincronamente no corpo do efeito; o próprio timeout do auto-hide é
+  // que fica num efeito, já que aí a atualização acontece de forma assíncrona (permitido).
+  if (state !== prevState) {
+    setPrevState(state);
+    if (state && "success" in state) setSaved(true);
+  }
+
   useEffect(() => {
-    if (state && "success" in state) {
-      setSaved(true);
-      const t = setTimeout(() => setSaved(false), 3000);
-      return () => clearTimeout(t);
-    }
-  }, [state]);
+    if (!saved) return;
+    const t = setTimeout(() => setSaved(false), 3000);
+    return () => clearTimeout(t);
+  }, [saved]);
 
   const fields = (state && "fields" in state ? state.fields : {}) ?? {};
 
