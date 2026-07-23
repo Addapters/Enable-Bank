@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import {
   BadgeCheck, MapPin, Globe, Mail, Phone,
-  User, Package, ChevronLeft, ExternalLink, Tag,
+  User, Package, ChevronLeft, ExternalLink, Tag, Pencil,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
@@ -67,6 +67,9 @@ export default async function EntityPublicPage({ params }: Props) {
 
   if (!rawEntity) notFound();
   const entity = rawEntity as unknown as EntityFull;
+
+  const { data: { user: viewer } } = await supabase.auth.getUser();
+  const isOwnProfile = viewer?.id === entity.user_id;
 
   const { data: rawPubs } = await supabase
     .from("publications")
@@ -153,6 +156,15 @@ export default async function EntityPublicPage({ params }: Props) {
                       </span>
                     )}
                   </div>
+                  {isOwnProfile && (
+                    <Link
+                      href="/profile"
+                      className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium bg-purple-700 text-white px-3 py-1.5 rounded-lg hover:bg-purple-800 transition-colors"
+                    >
+                      <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+                      Editar perfil
+                    </Link>
+                  )}
                 </div>
               </div>
 
