@@ -133,7 +133,10 @@ export async function updateEntityProfile(
     { onConflict: "user_id" }
   );
 
-  if (entErr) return { error: "Erro ao guardar o perfil da entidade." };
+  if (entErr) {
+    console.error("updateEntityProfile upsert error:", entErr);
+    return { error: `Erro ao guardar o perfil da entidade: ${entErr.message}` };
+  }
 
   // Upsert contacto público da entidade
   await supabase.from("contacts").upsert(
