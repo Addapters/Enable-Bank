@@ -7,8 +7,10 @@ import { Link } from "@/i18n/navigation";
 import { MapPin, Tag, Clock, ChevronLeft, CheckCircle, XCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ContactInfo from "@/components/publications/ContactInfo";
+import FavoriteButton from "@/components/publications/FavoriteButton";
 import PhotoGallery from "./PhotoGallery";
 import type { PublicationRow, CategoryRow, PhotoRow, UserRow } from "@/types/database";
+import { getFavoriteState } from "@/lib/favorites/queries";
 
 type Props = { params: Promise<{ id: string; locale: string }> };
 type PublicationFull = PublicationRow & {
@@ -48,6 +50,7 @@ export default async function PublicationDetailPage({ params }: Props) {
   if (error || !data) notFound();
 
   const pub = data as unknown as PublicationFull;
+  const { viewerId, favIds } = await getFavoriteState([pub.id]);
   const typeStyle = TYPE_STYLES[pub.tipo];
   const sortedPhotos = [...pub.photos].sort((a, b) => a.ordem - b.ordem);
   const createdAt = new Intl.DateTimeFormat("pt-PT", { day: "numeric", month: "long", year: "numeric" }).format(new Date(pub.criado_em));
@@ -79,7 +82,17 @@ export default async function PublicationDetailPage({ params }: Props) {
                 <span className="text-xs font-semibold px-3 py-1 rounded-full bg-gray-100 text-gray-600 flex items-center gap-1"><XCircle className="w-3 h-3" aria-hidden="true" />Disponibilidade a confirmar</span>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{pub.titulo}</h1>
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <h1 className="text-2xl font-bold text-gray-900">{pub.titulo}</h1>
+              {viewerId !== pub.user_id && (
+                <FavoriteButton
+                  publicationId={pub.id}
+                  initialFavorited={favIds.has(pub.id)}
+                  isAuthenticated={!!viewerId}
+                  className="shrink-0 border border-gray-200"
+                />
+              )}
+            </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
               <span className="flex items-center gap-1"><MapPin className="w-4 h-4" aria-hidden="true" />{pub.concelho}</span>
               {pub.category && <Link href={`/search?categoria=${pub.category.slug}`} className="flex items-center gap-1 hover:text-purple-700"><Tag className="w-4 h-4" aria-hidden="true" />{pub.category.nome}</Link>}

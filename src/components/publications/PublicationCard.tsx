@@ -3,6 +3,7 @@ import { MapPin, Clock, Tag } from "lucide-react";
 import { clsx } from "clsx";
 import type { PublicationRow, CategoryRow, PhotoRow } from "@/types/database";
 import PublisherAvatar, { type PublisherInfo } from "./PublisherAvatar";
+import FavoriteButton from "./FavoriteButton";
 
 type Props = {
   publication: PublicationRow & {
@@ -11,6 +12,10 @@ type Props = {
   };
   /** Info do publisher (nome, tipo, logo, verificada). Opcional — se ausente não mostra avatar. */
   publisher?: PublisherInfo;
+  /** Mostra o botão de favorito. Omite para anúncios próprios (não faz sentido favoritar). */
+  showFavorite?: boolean;
+  isFavorited?: boolean;
+  isAuthenticated?: boolean;
 };
 
 const TYPE_STYLES = {
@@ -22,7 +27,7 @@ const TYPE_STYLES = {
 const CONDITION_LABELS = { novo: "Novo", bom: "Bom estado", usado: "Usado" };
 const AUDIENCE_LABELS  = { crianca: "Criança/Jovem", adulto: "Adulto", ambos: "Ambos" };
 
-export default function PublicationCard({ publication, publisher }: Props) {
+export default function PublicationCard({ publication, publisher, showFavorite, isFavorited, isAuthenticated }: Props) {
   const typeStyle = TYPE_STYLES[publication.tipo];
   // Ordena fotos por ordem antes de pegar a capa
   const sortedPhotos = publication.photos
@@ -31,11 +36,22 @@ export default function PublicationCard({ publication, publisher }: Props) {
   const coverPhoto = sortedPhotos[0]?.url;
 
   return (
-    <Link
-      href={`/publications/${publication.id}`}
-      className="group flex flex-col bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all overflow-hidden"
-      aria-label={`${publication.titulo} — ${typeStyle.label} em ${publication.concelho}`}
-    >
+    <div className="group relative flex flex-col bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all overflow-hidden">
+      {/* Botão de favorito — fora do <Link> (irmão, não aninhado) para não ter <button> dentro de <a> */}
+      {showFavorite && (
+        <FavoriteButton
+          publicationId={publication.id}
+          initialFavorited={!!isFavorited}
+          isAuthenticated={!!isAuthenticated}
+          className="absolute top-2 right-2 z-10"
+        />
+      )}
+
+      <Link
+        href={`/publications/${publication.id}`}
+        className="contents"
+        aria-label={`${publication.titulo} — ${typeStyle.label} em ${publication.concelho}`}
+      >
       {/* Foto de capa */}
       <div className="relative h-44 bg-gray-100 overflow-hidden">
         {coverPhoto ? (
@@ -56,7 +72,10 @@ export default function PublicationCard({ publication, publisher }: Props) {
           {typeStyle.label}
         </span>
         {publication.disponivel && (
-          <span className="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
+          <span className={clsx(
+            "absolute right-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200",
+            showFavorite ? "top-12" : "top-2"
+          )}>
             Disponível já
           </span>
         )}
@@ -95,6 +114,7 @@ export default function PublicationCard({ publication, publisher }: Props) {
           </span>
         </div>
       </div>
-    </Link>
+      </Link>
+    </div>
   );
 }

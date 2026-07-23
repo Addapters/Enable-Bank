@@ -9,6 +9,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 import type { PublisherInfo } from "@/components/publications/PublisherAvatar";
+import { getFavoriteState } from "@/lib/favorites/queries";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
@@ -83,6 +84,7 @@ export default async function EntityPublicPage({ params }: Props) {
     .order("criado_em", { ascending: false });
 
   const pubs = (rawPubs as unknown as RawPub[]) ?? [];
+  const { favIds } = await getFavoriteState(pubs.map((p) => p.id));
 
   // Agrupa por categoria
   const grouped = new Map<string, { nome: string; pubs: RawPub[] }>();
@@ -265,7 +267,13 @@ export default async function EntityPublicPage({ params }: Props) {
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {group.pubs.map((pub) => (
                       <li key={pub.id}>
-                        <PublicationCard publication={pub as never} publisher={publisherInfo} />
+                        <PublicationCard
+                          publication={pub as never}
+                          publisher={publisherInfo}
+                          showFavorite={!isOwnProfile}
+                          isFavorited={favIds.has(pub.id)}
+                          isAuthenticated={!!viewer}
+                        />
                       </li>
                     ))}
                   </ul>

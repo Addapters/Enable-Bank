@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Search, MapPin, ArrowRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
+import { getFavoriteState } from "@/lib/favorites/queries";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "Enable Bank — Plataforma de produtos de apoio" };
@@ -28,6 +29,7 @@ async function getFeaturedPublications() {
 export default async function HomePage() {
   const t = await getTranslations("home");
   const featured = await getFeaturedPublications();
+  const { viewerId, favIds } = await getFavoriteState(featured.map((p) => p.id));
 
   // Ícones isolados de /category-icons.png via CSS sprite. As colunas da grelha de origem
   // não são igualmente espaçadas (confirmado por análise pixel a pixel dos limites reais de
@@ -75,7 +77,13 @@ export default async function HomePage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {featured.map((pub) => (
-                <PublicationCard key={pub.id} publication={pub} />
+                <PublicationCard
+                  key={pub.id}
+                  publication={pub}
+                  showFavorite={viewerId !== pub.user_id}
+                  isFavorited={favIds.has(pub.id)}
+                  isAuthenticated={!!viewerId}
+                />
               ))}
             </div>
           </div>

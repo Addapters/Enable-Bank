@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 import SearchFilters from "./SearchFilters";
 import type { PublicationRow, CategoryRow } from "@/types/database";
+import { getFavoriteState } from "@/lib/favorites/queries";
 
 export const metadata: Metadata = { title: "Pesquisa de produtos de apoio" };
 
@@ -120,6 +121,7 @@ export default async function SearchPage({ searchParams }: Props) {
   const params = await searchParams;
   const t = await getTranslations("search");
   const [categories, { items, count, entityMap }] = await Promise.all([getCategories(), getResults(params)]);
+  const { viewerId, favIds } = await getFavoriteState(items.map((p) => p.id));
   const page = Math.max(1, Number(params.page ?? 1));
   const totalPages = Math.ceil(count / PAGE_SIZE);
   const hasQuery = !!(params.q || params.tipo || params.publico || params.categoria || params.disponivel || params.entidade_verificada || params.entidade);
@@ -195,6 +197,9 @@ export default async function SearchPage({ searchParams }: Props) {
                           logoUrl:    entityData?.logo_url ?? null,
                           verificada: entityData?.verificada ?? false,
                         } : undefined}
+                        showFavorite={viewerId !== pub.user_id}
+                        isFavorited={favIds.has(pub.id)}
+                        isAuthenticated={!!viewerId}
                       />
                     </li>
                   );

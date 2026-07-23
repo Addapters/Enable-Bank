@@ -99,6 +99,13 @@ export interface ModerationLogRow {
   criado_em: string;
 }
 
+export interface FavoriteRow {
+  id: string;
+  user_id: string;
+  publication_id: string;
+  criado_em: string;
+}
+
 export type User = UserRow;
 export type Entity = EntityRow;
 export type Category = CategoryRow;
@@ -106,6 +113,7 @@ export type Publication = PublicationRow;
 export type Photo = PhotoRow;
 export type Contact = ContactRow;
 export type ModerationLog = ModerationLogRow;
+export type Favorite = FavoriteRow;
 
 export type PublicationWithDetails = PublicationRow & {
   photos: PhotoRow[];

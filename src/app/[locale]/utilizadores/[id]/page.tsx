@@ -5,6 +5,7 @@ import { MapPin, Package, ChevronLeft, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import ContactInfo from "@/components/publications/ContactInfo";
 import PublicationCard from "@/components/publications/PublicationCard";
+import { getFavoriteState } from "@/lib/favorites/queries";
 
 type Props = { params: Promise<{ id: string; locale: string }> };
 
@@ -83,6 +84,7 @@ export default async function PublicUserPage({ params }: Props) {
     .order("criado_em", { ascending: false });
 
   const pubs = (rawPubs as unknown as RawPub[]) ?? [];
+  const { favIds } = await getFavoriteState(pubs.map((p) => p.id));
 
   const registadoEm = new Date(user.criado_em).toLocaleDateString("pt-PT", {
     month: "long", year: "numeric",
@@ -168,7 +170,12 @@ export default async function PublicUserPage({ params }: Props) {
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {pubs.map((pub) => (
                   <li key={pub.id}>
-                    <PublicationCard publication={pub as never} />
+                    <PublicationCard
+                      publication={pub as never}
+                      showFavorite={!isOwnProfile}
+                      isFavorited={favIds.has(pub.id)}
+                      isAuthenticated={!!viewer}
+                    />
                   </li>
                 ))}
               </ul>
