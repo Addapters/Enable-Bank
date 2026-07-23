@@ -17,10 +17,11 @@ interface RawPublication {
 }
 
 const STATUS_ORDER: Record<PublicationStatus, number> = {
-  pendente: 0,
-  ativo: 1,
-  rejeitado: 2,
-  cedido: 3,
+  correcao: 0,
+  pendente: 1,
+  ativo: 2,
+  rejeitado: 3,
+  cedido: 4,
 };
 
 export default async function DashboardPage() {
@@ -44,6 +45,22 @@ export default async function DashboardPage() {
 
   const pubs = (publications as unknown as RawPublication[]) ?? [];
 
+  // Notas de correção — última nota de moderação (acao='correcao') por anúncio que esteja
+  // atualmente com esse estado.
+  const correctionIds = pubs.filter((p) => p.moderacao === "correcao").map((p) => p.id);
+  const correctionNotes: Record<string, string> = {};
+  if (correctionIds.length > 0) {
+    const { data: logs } = await supabase
+      .from("moderation_logs")
+      .select("publication_id, nota, criado_em")
+      .in("publication_id", correctionIds)
+      .eq("acao", "correcao")
+      .order("criado_em", { ascending: false });
+    for (const log of (logs ?? []) as { publication_id: string; nota: string | null }[]) {
+      if (!correctionNotes[log.publication_id] && log.nota) correctionNotes[log.publication_id] = log.nota;
+    }
+  }
+
   // Group by status
   const grouped = pubs.reduce<Record<string, RawPublication[]>>((acc, pub) => {
     const key = pub.moderacao;
@@ -57,6 +74,7 @@ export default async function DashboardPage() {
   );
 
   const GROUP_LABELS: Record<PublicationStatus, string> = {
+    correcao: "Precisam de correção",
     pendente: "Pendentes de aprovação",
     ativo: "Ativos",
     rejeitado: "Rejeitados",
@@ -64,6 +82,7 @@ export default async function DashboardPage() {
   };
 
   const GROUP_ACCENT: Record<PublicationStatus, string> = {
+    correcao: "border-amber-400",
     pendente: "border-yellow-400",
     ativo: "border-green-500",
     rejeitado: "border-red-400",
@@ -144,7 +163,7 @@ export default async function DashboardPage() {
 
             <ul className="space-y-3" aria-label={GROUP_LABELS[status]}>
               {grouped[status].map((pub) => (
-                <PublicationRow key={pub.id} pub={pub} />
+                <PublicationRow key={pub.id} pub={pub} correctionNote={correctionNotes[pub.id]} />
               ))}
             </ul>
           </section>

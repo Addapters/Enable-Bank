@@ -3,7 +3,7 @@ export type UserType = "particular" | "entidade";
 export type EntityType = "ONGPD" | "IPSS" | "municipio" | "misericordia" | "clinica" | "associacao" | "outro";
 export type PublicationType = "doacao" | "troca" | "venda";
 export type ProductCondition = "novo" | "bom" | "usado";
-export type PublicationStatus = "pendente" | "ativo" | "rejeitado" | "cedido";
+export type PublicationStatus = "pendente" | "ativo" | "rejeitado" | "cedido" | "correcao";
 export type Audience = "crianca" | "adulto" | "ambos";
 
 export interface UserRow {
@@ -106,6 +106,26 @@ export interface FavoriteRow {
   criado_em: string;
 }
 
+export type NotificationType =
+  | "aprovado"
+  | "rejeitado"
+  | "correcao"
+  | "favorito_novo"
+  | "favorito_indisponivel"
+  | "entidade_verificada";
+
+export interface NotificationRow {
+  id: string;
+  user_id: string;
+  tipo: NotificationType;
+  titulo: string;
+  mensagem: string | null;
+  link: string | null;
+  publication_id: string | null;
+  lida: boolean;
+  criado_em: string;
+}
+
 export type User = UserRow;
 export type Entity = EntityRow;
 export type Category = CategoryRow;
@@ -114,6 +134,7 @@ export type Photo = PhotoRow;
 export type Contact = ContactRow;
 export type ModerationLog = ModerationLogRow;
 export type Favorite = FavoriteRow;
+export type Notification = NotificationRow;
 
 export type PublicationWithDetails = PublicationRow & {
   photos: PhotoRow[];

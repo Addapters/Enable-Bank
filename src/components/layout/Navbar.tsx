@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Menu, X, UserCircle, Plus } from "lucide-react";
+import { Menu, X, UserCircle, Plus, Bell } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [notifCount, setNotifCount] = useState(0);
   const supabase = createClient();
 
   useEffect(() => {
@@ -24,6 +25,9 @@ export default function Navbar() {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             setIsAdmin((profile as any)?.role === "admin");
           });
+        supabase.from("notifications").select("id", { count: "exact", head: true })
+          .eq("user_id", data.user.id).eq("lida", false)
+          .then(({ count }) => setNotifCount(count ?? 0));
       }
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
@@ -90,6 +94,14 @@ export default function Navbar() {
                 {/* Submenu — aparece ao passar o rato (padding-top mantém a área "hoverable" contínua) */}
                 <div className="absolute right-0 top-full w-52 pt-2 invisible opacity-0 translate-y-1 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-150 z-50">
                   <div className="bg-white rounded-xl border border-gray-200 shadow-lg py-1.5">
+                    <Link href="/notificacoes" className="flex items-center justify-between gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-purple-700 transition-colors">
+                      <span className="flex items-center gap-2">
+                        <Bell className="w-4 h-4" aria-hidden="true" />
+                        Notificações{notifCount > 0 ? ` (${notifCount})` : ""}
+                      </span>
+                      {notifCount > 0 && <span className="w-2 h-2 rounded-full bg-purple-600 shrink-0" aria-hidden="true" />}
+                    </Link>
+                    <div className="my-1 border-t border-gray-100" />
                     <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-purple-700 transition-colors">
                       Os meus anúncios
                     </Link>
@@ -133,6 +145,10 @@ export default function Navbar() {
                   </Link>
                   <Link href={publicProfileHref} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
                     <UserCircle className="w-4 h-4" aria-hidden="true" />Ver perfil
+                  </Link>
+                  <Link href="/notificacoes" className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
+                    <Bell className="w-4 h-4" aria-hidden="true" />
+                    Notificações{notifCount > 0 ? ` (${notifCount})` : ""}
                   </Link>
                   <Link href="/dashboard" className="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
                     Os meus anúncios

@@ -6,9 +6,9 @@ import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import {
   CheckCircle, XCircle, ExternalLink, Edit2,
-  Loader2, AlertCircle, Package, MapPin, Calendar, Tag,
+  Loader2, AlertCircle, Package, MapPin, Calendar, Tag, MessageSquareWarning,
 } from "lucide-react";
-import { approvePublication, rejectPublication } from "@/lib/admin/actions";
+import { approvePublication, rejectPublication, requestCorrection } from "@/lib/admin/actions";
 
 interface Photo { url: string; ordem: number }
 interface Category { nome: string }
@@ -43,7 +43,7 @@ const PUBLICO_LABEL: Record<string, string> = {
 // ─── Card ─────────────────────────────────────────────────────────────────────
 function PublicationCard({ pub, onDone }: { pub: Publication; onDone: (id: string) => void }) {
   const [isPending, startTransition] = useTransition();
-  const [showReject, setShowReject] = useState(false);
+  const [activePanel, setActivePanel] = useState<"reject" | "correction" | null>(null);
   const [nota, setNota] = useState("");
   const [notaError, setNotaError] = useState("");
   const [actionError, setActionError] = useState("");
@@ -74,6 +74,20 @@ function PublicationCard({ pub, onDone }: { pub: Publication; onDone: (id: strin
     setActionError("");
     startTransition(async () => {
       const result = await rejectPublication(pub.id, nota);
+      if ("error" in result) { setActionError(result.error); return; }
+      onDone(pub.id);
+    });
+  };
+
+  const handleCorrection = () => {
+    if (!nota.trim()) {
+      setNotaError("A nota é obrigatória para explicar o que precisa de ser corrigido.");
+      return;
+    }
+    setNotaError("");
+    setActionError("");
+    startTransition(async () => {
+      const result = await requestCorrection(pub.id, nota);
       if ("error" in result) { setActionError(result.error); return; }
       onDone(pub.id);
     });
@@ -188,12 +202,32 @@ function PublicationCard({ pub, onDone }: { pub: Publication; onDone: (id: strin
           Aprovar
         </button>
 
-        {/* Rejeitar */}
+        {/* Pedir correção */}
         <button
-          onClick={() => { setShowReject((v) => !v); setNota(""); setNotaError(""); }}
+          onClick={() => {
+            setActivePanel((v) => (v === "correction" ? null : "correction"));
+            setNota(""); setNotaError("");
+          }}
           disabled={isPending}
           className={`inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg border transition-colors disabled:opacity-50 ${
-            showReject
+            activePanel === "correction"
+              ? "bg-amber-500 text-white border-amber-500 hover:bg-amber-600"
+              : "border-amber-300 text-amber-700 hover:bg-amber-50"
+          }`}
+        >
+          <MessageSquareWarning className="w-4 h-4" aria-hidden="true" />
+          Pedir correção
+        </button>
+
+        {/* Rejeitar */}
+        <button
+          onClick={() => {
+            setActivePanel((v) => (v === "reject" ? null : "reject"));
+            setNota(""); setNotaError("");
+          }}
+          disabled={isPending}
+          className={`inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg border transition-colors disabled:opacity-50 ${
+            activePanel === "reject"
               ? "bg-red-600 text-white border-red-600 hover:bg-red-700"
               : "border-red-300 text-red-600 hover:bg-red-50"
           }`}
@@ -212,8 +246,53 @@ function PublicationCard({ pub, onDone }: { pub: Publication; onDone: (id: strin
         </Link>
       </div>
 
+      {/* ── Painel de pedido de correção (inline expansível) ─────────── */}
+      {activePanel === "correction" && (
+        <div className="border-t border-amber-100 bg-amber-50 px-4 sm:px-5 py-4 space-y-3">
+          <p className="text-sm font-medium text-amber-800">
+            O que precisa de ser corrigido{" "}
+            <span className="text-amber-600 font-bold" aria-hidden="true">*</span>
+          </p>
+          <textarea
+            value={nota}
+            onChange={(e) => { setNota(e.target.value); setNotaError(""); }}
+            placeholder="Explica ao publisher o que deve alterar (ex: falta uma fotografia, descrição pouco clara...). O anúncio fica pendente até ele voltar a submeter."
+            rows={3}
+            aria-label="Nota de correção"
+            aria-invalid={notaError ? "true" : undefined}
+            className={`w-full rounded-lg border px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-white ${
+              notaError ? "border-red-400" : "border-amber-200"
+            }`}
+          />
+          {notaError && (
+            <p className="text-xs text-red-600 flex items-center gap-1" role="alert">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+              {notaError}
+            </p>
+          )}
+          <div className="flex gap-2">
+            <button
+              onClick={handleCorrection}
+              disabled={isPending}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg bg-amber-500 text-white hover:bg-amber-600 disabled:opacity-50 transition-colors"
+            >
+              {isPending
+                ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                : <MessageSquareWarning className="w-4 h-4" aria-hidden="true" />}
+              Confirmar pedido de correção
+            </button>
+            <button
+              onClick={() => { setActivePanel(null); setNota(""); setNotaError(""); }}
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Painel de rejeição (inline expansível) ───────────────────── */}
-      {showReject && (
+      {activePanel === "reject" && (
         <div className="border-t border-red-100 bg-red-50 px-4 sm:px-5 py-4 space-y-3">
           <p className="text-sm font-medium text-red-800">
             Nota para o publisher{" "}
@@ -248,7 +327,7 @@ function PublicationCard({ pub, onDone }: { pub: Publication; onDone: (id: strin
               Confirmar rejeição
             </button>
             <button
-              onClick={() => { setShowReject(false); setNota(""); setNotaError(""); }}
+              onClick={() => { setActivePanel(null); setNota(""); setNotaError(""); }}
               className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
               Cancelar

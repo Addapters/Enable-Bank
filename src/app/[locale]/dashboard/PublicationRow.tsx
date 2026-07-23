@@ -11,6 +11,7 @@ import {
   CheckCircle,
   Loader2,
   AlertTriangle,
+  MessageSquareWarning,
 } from "lucide-react";
 import {
   deactivatePublication,
@@ -32,6 +33,8 @@ interface Publication {
 
 interface Props {
   pub: Publication;
+  /** Nota do admin quando pub.moderacao === "correcao". */
+  correctionNote?: string;
 }
 
 const TYPE_LABELS: Record<PublicationType, string> = {
@@ -51,6 +54,7 @@ const STATUS_LABELS: Record<PublicationStatus, string> = {
   ativo: "Ativo",
   rejeitado: "Rejeitado",
   cedido: "Cedido",
+  correcao: "Correção pedida",
 };
 
 const STATUS_COLORS: Record<PublicationStatus, string> = {
@@ -58,9 +62,10 @@ const STATUS_COLORS: Record<PublicationStatus, string> = {
   ativo: "bg-green-100 text-green-800",
   rejeitado: "bg-red-100 text-red-800",
   cedido: "bg-gray-100 text-gray-600",
+  correcao: "bg-amber-100 text-amber-800",
 };
 
-export default function PublicationRow({ pub }: Props) {
+export default function PublicationRow({ pub, correctionNote }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -113,6 +118,13 @@ export default function PublicationRow({ pub }: Props) {
           <p className="text-sm text-gray-500 mt-0.5">
             {pub.category?.nome ?? "Sem categoria"} · {formattedDate}
           </p>
+
+          {pub.moderacao === "correcao" && correctionNote && (
+            <div className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2">
+              <MessageSquareWarning className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
+              <p className="text-sm text-amber-800">{correctionNote}</p>
+            </div>
+          )}
 
           {error && (
             <p className="mt-2 text-sm text-red-600 flex items-center gap-1">

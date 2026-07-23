@@ -69,3 +69,29 @@ export async function rejectPublication(
   revalidatePath("/pt/admin/moderation");
   return { success: true };
 }
+
+export async function requestCorrection(
+  id: string,
+  nota: string
+): Promise<ModerationResult> {
+  const { supabase, adminId } = await getAdmin();
+
+  if (!nota?.trim()) return { error: "A nota com o que precisa de ser corrigido é obrigatória." };
+
+  const { error } = await supabase
+    .from("publications")
+    .update({ moderacao: "correcao" })
+    .eq("id", id);
+
+  if (error) return { error: "Erro ao pedir correção do anúncio." };
+
+  await supabase.from("moderation_logs").insert({
+    publication_id: id,
+    admin_id: adminId,
+    acao: "correcao",
+    nota: nota.trim(),
+  });
+
+  revalidatePath("/pt/admin/moderation");
+  return { success: true };
+}
