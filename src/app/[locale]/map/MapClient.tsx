@@ -85,7 +85,7 @@ export default function MapClient({ publications, categories, locale, searchPara
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center gap-3 shrink-0">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-purple-700 transition-colors"
+          className="md:hidden flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-purple-700 transition-colors"
         >
           <Filter className="w-4 h-4" aria-hidden="true" />
           Filtros
@@ -114,9 +114,8 @@ export default function MapClient({ publications, categories, locale, searchPara
         </div>
       </div>
 
-      {/* Filtros expandíveis */}
-      {showFilters && (
-        <div className="bg-white border-b border-gray-200 px-4 py-3 shrink-0">
+      {/* Filtros — expansível em mobile, sempre visível em tablet/desktop (md+) */}
+      <div className={`${showFilters ? "block" : "hidden"} md:block bg-white border-b border-gray-200 px-4 py-3 shrink-0`}>
           <div className="max-w-4xl flex flex-wrap gap-4 items-end">
             {/* Tipo */}
             <div className="flex flex-col gap-1">
@@ -193,7 +192,6 @@ export default function MapClient({ publications, categories, locale, searchPara
             )}
           </div>
         </div>
-      )}
 
       {/* Mapa */}
       <div className="flex-1 relative">

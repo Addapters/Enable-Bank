@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { Menu, X, UserCircle } from "lucide-react";
+import { Menu, X, UserCircle, Plus } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
@@ -43,7 +43,6 @@ export default function Navbar() {
     { href: "/search", label: t("search") },
     { href: "/map", label: "Mapa" },
     { href: "/entidades", label: "Entidades" },
-    ...(user ? [{ href: "/publications/new", label: t("publish") }] : []),
     ...(isAdmin ? [{ href: "/admin", label: t("admin") }] : []),
   ];
 
@@ -69,7 +68,16 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-3">
             {user ? (
-              <div className="relative group">
+              <>
+                <Link
+                  href="/publications/new"
+                  className="flex items-center gap-1.5 text-sm font-medium bg-white text-purple-700 border border-purple-700 px-4 py-2 rounded-lg hover:bg-purple-50 transition-colors"
+                >
+                  <Plus className="w-4 h-4" aria-hidden="true" />
+                  {t("publish")}
+                </Link>
+
+                <div className="relative group">
                 <Link
                   href={publicProfileHref}
                   className={`flex items-center gap-1.5 text-sm font-medium bg-purple-700 text-white px-4 py-2 rounded-lg hover:bg-purple-800 transition-colors ${pathname === publicProfileHref ? "ring-2 ring-purple-300" : ""}`}
@@ -97,7 +105,8 @@ export default function Navbar() {
                     </button>
                   </div>
                 </div>
-              </div>
+                </div>
+              </>
             ) : (
               <>
                 <Link href="/auth/login" className="text-sm font-medium text-gray-600 hover:text-purple-700 transition-colors">{t("login")}</Link>
@@ -119,6 +128,9 @@ export default function Navbar() {
             <div className="border-t border-gray-200 pt-3 mt-3 space-y-1">
               {user ? (
                 <>
+                  <Link href="/publications/new" className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
+                    <Plus className="w-4 h-4" aria-hidden="true" />{t("publish")}
+                  </Link>
                   <Link href={publicProfileHref} className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-purple-700 hover:bg-gray-50 rounded-md" onClick={() => setIsOpen(false)}>
                     <UserCircle className="w-4 h-4" aria-hidden="true" />Ver perfil
                   </Link>
