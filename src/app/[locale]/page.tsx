@@ -29,18 +29,19 @@ export default async function HomePage() {
   const t = await getTranslations("home");
   const featured = await getFeaturedPublications();
 
-  // Ícones isolados de /category-icons.png via CSS sprite. As posições foram calculadas a partir
-  // do centro real de cada ícone (analisado pixel a pixel) — os ícones não estão uniformemente
-  // centrados nas suas células na imagem de origem, por isso não dá para usar um grid 4x2 simples.
+  // Ícones isolados de /category-icons.png via CSS sprite. O recorte de cada ícone é sempre
+  // uma célula inteira da grelha 4x2 (nunca mais largo/alto que a célula), para garantir que
+  // nunca aparecem pedaços de ícones vizinhos; o deslocamento vertical dentro da célula foi
+  // ajustado a partir do centro real de cada ícone (analisado pixel a pixel).
   const categories = [
-    { slug: "mobilidade", iconPos: "0.9px -14.32px", label: "Mobilidade" },
-    { slug: "comunicacao", iconPos: "-54.55px -14.32px", label: "Comunicação" },
-    { slug: "banho-higiene", iconPos: "-114.29px -14.48px", label: "Banho e Higiene" },
-    { slug: "cama-descanso", iconPos: "-169.14px -14.63px", label: "Cama e Descanso" },
-    { slug: "reabilitacao", iconPos: "0.9px -75.12px", label: "Reabilitação" },
-    { slug: "casa-ambiente", iconPos: "-54.55px -75.12px", label: "Casa e Ambiente" },
-    { slug: "lazer-desporto", iconPos: "-114.44px -75.12px", label: "Lazer e Desporto" },
-    { slug: "outros", iconPos: "-168.23px -75.27px", label: "Outros" },
+    { slug: "mobilidade", iconPos: "0px -18.67px", label: "Mobilidade" },
+    { slug: "comunicacao", iconPos: "-64px -18.67px", label: "Comunicação" },
+    { slug: "banho-higiene", iconPos: "-128px -18.83px", label: "Banho e Higiene" },
+    { slug: "cama-descanso", iconPos: "-192px -19px", label: "Cama e Descanso" },
+    { slug: "reabilitacao", iconPos: "0px -85.33px", label: "Reabilitação" },
+    { slug: "casa-ambiente", iconPos: "-64px -85.33px", label: "Casa e Ambiente" },
+    { slug: "lazer-desporto", iconPos: "-128px -85.33px", label: "Lazer e Desporto" },
+    { slug: "outros", iconPos: "-192px -85.33px", label: "Outros" },
   ];
 
   return (
@@ -91,7 +92,7 @@ export default async function HomePage() {
                   aria-hidden="true"
                   style={{
                     backgroundImage: "url(/category-icons.png)",
-                    backgroundSize: "234.06px 156.04px",
+                    backgroundSize: "256px 170.67px",
                     backgroundPosition: cat.iconPos,
                     width: 64,
                     height: 64,
@@ -108,28 +109,33 @@ export default async function HomePage() {
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-16 text-center">{t("howItWorks.title")}</h2>
           <div className="relative">
-            {/* Linha ondulada decorativa a ligar os passos (só desktop) */}
-            <svg
-              className="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 w-full h-20 opacity-30"
-              viewBox="0 0 100 40"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <defs>
-                <linearGradient id="howItWorksWave" x1="0" y1="0" x2="100%" y2="0">
-                  <stop offset="0%" stopColor="var(--color-purple-400)" />
-                  <stop offset="50%" stopColor="var(--color-purple-700)" />
-                  <stop offset="100%" stopColor="var(--color-purple-400)" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M0,34 C 15,34 15,2 50,2 C 85,2 85,34 100,34"
-                fill="none"
-                stroke="url(#howItWorksWave)"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-            </svg>
+            {/* Linha ondulada decorativa a ligar os passos (só desktop). Envolvida numa div
+                simples (não um elemento substituído como o svg) para que top/bottom negativos
+                calculem a altura corretamente, sem a proporção intrínseca do viewBox interferir. */}
+            <div className="hidden sm:block absolute left-0 right-0 -top-8 -bottom-8">
+              <svg
+                className="w-full h-full opacity-30"
+                viewBox="0 0 100 40"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="howItWorksWave" x1="0" y1="0" x2="100%" y2="0">
+                    <stop offset="0%" stopColor="var(--color-purple-400)" />
+                    <stop offset="50%" stopColor="var(--color-purple-700)" />
+                    <stop offset="100%" stopColor="var(--color-purple-400)" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M0,39 C 15,39 15,1 50,1 C 85,1 85,39 100,39"
+                  fill="none"
+                  stroke="url(#howItWorksWave)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+            </div>
 
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8">
               {(["step1", "step2", "step3"] as const).map((step, i) => {
