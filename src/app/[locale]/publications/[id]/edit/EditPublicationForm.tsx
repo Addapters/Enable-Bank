@@ -18,7 +18,7 @@ interface ExistingPhoto { id: string; url: string; ordem: number }
 interface Publication {
   id: string; titulo: string; descricao: string;
   tipo: string; publico: string; estado: string;
-  concelho: string; disponivel: boolean; preco: number | null;
+  concelho: string; disponivel: boolean; preco: number | null; negociavel: boolean;
   categoria_id: string; codigo_postal: string | null;
 }
 
@@ -478,6 +478,18 @@ export default function EditPublicationForm({
               />
             </div>
             {errors.preco && <p className="text-xs text-red-600" role="alert">{errors.preco}</p>}
+
+            <label className="flex items-center gap-3 cursor-pointer group mt-1">
+              <input
+                type="checkbox"
+                name="negociavel"
+                defaultChecked={publication.negociavel}
+                className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-600"
+              />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">
+                Negociável?
+              </span>
+            </label>
           </div>
         )}
       </Section>

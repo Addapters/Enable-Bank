@@ -28,7 +28,7 @@ async function getResults(params: SearchParams) {
 
   let query = supabase
     .from("publications")
-    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)`, { count: "exact" })
+    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, preco, negociavel, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)`, { count: "exact" })
     .eq("moderacao", "ativo")
     .order("criado_em", { ascending: false })
     .range(from, to);

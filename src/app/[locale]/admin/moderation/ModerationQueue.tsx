@@ -22,6 +22,7 @@ interface Publication {
   publico: string;
   concelho: string;
   preco: number | null;
+  negociavel: boolean;
   criado_em: string;
   category: Category | null;
   photos: Photo[];
@@ -106,8 +107,9 @@ function PublicationCard({ pub, onDone }: { pub: Publication; onDone: (id: strin
               {TYPE_LABEL[pub.tipo] ?? pub.tipo}
             </span>
             {pub.tipo === "venda" && pub.preco !== null && (
-              <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-orange-50 text-orange-700 border border-orange-200">
+              <span className="shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-orange-50 text-orange-700 border border-orange-200">
                 {pub.preco.toLocaleString("pt-PT", { style: "currency", currency: "EUR" })}
+                {pub.negociavel && <span className="font-medium">· Negociável</span>}
               </span>
             )}
             <span className="shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700">

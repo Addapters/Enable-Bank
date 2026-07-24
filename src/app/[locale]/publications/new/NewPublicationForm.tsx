@@ -538,6 +538,17 @@ export default function NewPublicationForm({
             {errors.preco && (
               <p id="preco-error" className="text-xs text-red-600" role="alert">{errors.preco}</p>
             )}
+
+            <label className="flex items-center gap-3 cursor-pointer group mt-1">
+              <input
+                type="checkbox"
+                name="negociavel"
+                className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-600"
+              />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">
+                Negociável?
+              </span>
+            </label>
           </div>
         )}
       </Section>

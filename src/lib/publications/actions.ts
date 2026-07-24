@@ -79,6 +79,7 @@ export async function createPublication(
   const disponivel    = formData.get("disponivel") === "on";
   const precoRaw      = formData.get("preco") as string | null;
   const preco         = precoRaw && precoRaw.trim() !== "" ? parseFloat(precoRaw) : null;
+  const negociavel    = formData.get("negociavel") === "on";
   const email_contacto = (formData.get("email_contacto") as string)?.trim();
   const telefone      = (formData.get("telefone") as string)?.trim() || null;
   const codigo_postal = (formData.get("codigo_postal") as string)?.trim().slice(0, 4) || null;
@@ -126,6 +127,7 @@ export async function createPublication(
       concelho,
       disponivel,
       preco: tipo === "venda" ? preco : null,
+      negociavel: tipo === "venda" ? negociavel : false,
       codigo_postal,
       user_id: userId,
       moderacao: "pendente",
@@ -180,6 +182,7 @@ export async function updatePublication(
   const disponivel     = formData.get("disponivel") === "on";
   const precoRaw       = formData.get("preco") as string | null;
   const preco          = precoRaw && precoRaw.trim() !== "" ? parseFloat(precoRaw) : null;
+  const negociavel     = formData.get("negociavel") === "on";
   const email_contacto = (formData.get("email_contacto") as string)?.trim();
   const telefone       = (formData.get("telefone") as string)?.trim() || null;
   const codigo_postal  = (formData.get("codigo_postal") as string)?.trim().slice(0, 4) || null;
@@ -223,6 +226,7 @@ export async function updatePublication(
       titulo, descricao, categoria_id, tipo, publico, estado,
       concelho, disponivel,
       preco: tipo === "venda" ? preco : null,
+      negociavel: tipo === "venda" ? negociavel : false,
       codigo_postal,
       moderacao: "pendente",
       // reset coords para re-geocodificar

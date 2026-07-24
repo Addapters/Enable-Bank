@@ -36,7 +36,7 @@ export default async function EditPublicationPage({
   // Fetch publication — admin pode editar qualquer; owner só os seus
   let pubQuery = supabase
     .from("publications")
-    .select("id, titulo, descricao, tipo, publico, estado, concelho, disponivel, preco, categoria_id, moderacao, user_id")
+    .select("id, titulo, descricao, tipo, publico, estado, concelho, disponivel, preco, negociavel, categoria_id, moderacao, user_id")
     .eq("id", id);
   if (!isAdmin) pubQuery = pubQuery.eq("user_id", user.id);
 
@@ -48,7 +48,7 @@ export default async function EditPublicationPage({
   const publication = pub as {
     id: string; titulo: string; descricao: string;
     tipo: string; publico: string; estado: string;
-    concelho: string; disponivel: boolean; preco: number | null;
+    concelho: string; disponivel: boolean; preco: number | null; negociavel: boolean;
     categoria_id: string; moderacao: string; user_id: string;
     codigo_postal: string | null; // populated after running supabase/add_map_fields.sql
   };

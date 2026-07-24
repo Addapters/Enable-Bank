@@ -12,6 +12,7 @@ interface RawPub {
   publico: string;
   concelho: string;
   preco: number | null;
+  negociavel: boolean;
   criado_em: string;
   category: { nome: string } | null;
   photos: { url: string; ordem: number }[];
@@ -51,7 +52,7 @@ export default async function ModerationPage() {
   const { data: publications } = await supabase
     .from("publications")
     .select(`
-      id, titulo, descricao, tipo, publico, concelho, preco, criado_em,
+      id, titulo, descricao, tipo, publico, concelho, preco, negociavel, criado_em,
       category:categories!categoria_id(nome),
       photos(url, ordem),
       user:users!user_id(nome, email, tipo)

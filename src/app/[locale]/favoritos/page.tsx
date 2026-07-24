@@ -14,7 +14,7 @@ interface RawPub {
   moderacao: string; criado_em: string;
   atualizado_em: string; categoria_id: string;
   user_id: string; latitude: number | null; longitude: number | null;
-  preco: number | null;
+  preco: number | null; negociavel: boolean;
   category: { nome: string } | null;
   photos: { url: string; ordem: number }[];
 }
@@ -28,7 +28,7 @@ export default async function FavoritosPage() {
     .from("favorites")
     .select(`criado_em, publication:publications!publication_id(
       id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao,
-      criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, preco,
+      criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, preco, negociavel,
       category:categories!categoria_id(nome), photos(url, ordem)
     )`)
     .eq("user_id", user.id)

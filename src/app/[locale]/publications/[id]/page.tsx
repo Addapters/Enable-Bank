@@ -45,7 +45,7 @@ export default async function PublicationDetailPage({ params }: Props) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("publications")
-    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, category:categories!categoria_id(nome, slug), photos(id, url, ordem), user:users!user_id(id, nome, tipo)`)
+    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, preco, negociavel, category:categories!categoria_id(nome, slug), photos(id, url, ordem), user:users!user_id(id, nome, tipo)`)
     .eq("id", id)
     .eq("moderacao", "ativo")
     .single();
@@ -97,6 +97,18 @@ export default async function PublicationDetailPage({ params }: Props) {
                 />
               )}
             </div>
+            {pub.tipo === "venda" && pub.preco !== null && (
+              <p className="flex items-center gap-2 mb-2">
+                <span className="text-2xl font-bold text-orange-700">
+                  {pub.preco.toLocaleString("pt-PT", { style: "currency", currency: "EUR" })}
+                </span>
+                {pub.negociavel && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-50 text-orange-600 border border-orange-200">
+                    Negociável
+                  </span>
+                )}
+              </p>
+            )}
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
               <span className="flex items-center gap-1"><MapPin className="w-4 h-4" aria-hidden="true" />{pub.concelho}</span>
               {pub.category && <Link href={`/search?categoria=${pub.category.slug}`} className="flex items-center gap-1 hover:text-purple-700"><Tag className="w-4 h-4" aria-hidden="true" />{pub.category.nome}</Link>}
@@ -115,6 +127,12 @@ export default async function PublicationDetailPage({ params }: Props) {
               <DetailItem label="Estado" value={CONDITION_LABELS[pub.estado]} />
               <DetailItem label="Público" value={AUDIENCE_LABELS[pub.publico]} />
               <DetailItem label="Tipo" value={typeStyle.label} />
+              {pub.tipo === "venda" && pub.preco !== null && (
+                <DetailItem
+                  label="Preço"
+                  value={`${pub.preco.toLocaleString("pt-PT", { style: "currency", currency: "EUR" })}${pub.negociavel ? " (negociável)" : ""}`}
+                />
+              )}
               {pub.category && <DetailItem label="Categoria" value={pub.category.nome} />}
               <DetailItem label="Localização" value={pub.concelho} />
             </dl>

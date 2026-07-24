@@ -67,6 +67,12 @@ export default function PublicationCard({ publication, publisher, showFavorite, 
           <span className={clsx("absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full border", typeStyle.className)}>
             {typeStyle.label}
           </span>
+          {publication.tipo === "venda" && publication.preco !== null && (
+            <span className="absolute bottom-2 left-2 flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-white/95 text-orange-700 border border-orange-200 shadow-sm">
+              {publication.preco.toLocaleString("pt-PT", { style: "currency", currency: "EUR" })}
+              {publication.negociavel && <span className="font-medium text-orange-500">· Negociável</span>}
+            </span>
+          )}
           {publication.disponivel && (
             <span className="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
               Disponível já

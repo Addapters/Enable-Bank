@@ -16,7 +16,7 @@ async function getFeaturedPublications() {
     const supabase = await createClient();
     const { data } = await supabase
       .from("publications")
-      .select("id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)")
+      .select("id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, preco, negociavel, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)")
       .eq("moderacao", "ativo")
       .order("criado_em", { ascending: false })
       .limit(8);

@@ -64,6 +64,7 @@ export interface PublicationRow {
   publico: Audience;
   disponivel: boolean;
   preco: number | null;
+  negociavel: boolean;
   concelho: string;
   latitude: number | null;
   longitude: number | null;
