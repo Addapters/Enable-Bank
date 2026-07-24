@@ -1,5 +1,6 @@
 import { Link } from "@/i18n/navigation";
 import { Heart, MessageCircle, Star } from "lucide-react";
+import ManageCookiesButton from "./ManageCookiesButton";
 
 const CATEGORIES = [
   { slug: "mobilidade", label: "Mobilidade" },
@@ -57,6 +58,7 @@ export default function Footer() {
               <li><Link href="/sobre" className="hover:text-white transition-colors">Sobre</Link></li>
               <li><Link href="/privacidade" className="hover:text-white transition-colors">Privacidade</Link></li>
               <li><Link href="/termos" className="hover:text-white transition-colors">Termos</Link></li>
+              <li><ManageCookiesButton className="hover:text-white transition-colors" /></li>
             </ul>
           </nav>
         </div>

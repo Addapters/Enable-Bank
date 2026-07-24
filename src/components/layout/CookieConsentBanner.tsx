@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Link } from "@/i18n/navigation";
 import { Cookie, X } from "lucide-react";
 
 const STORAGE_KEY = "enable-bank-cookie-consent";
+const CONSENT_CHANGED_EVENT = "enable-bank:consent-changed";
+
+// Disparado por qualquer sítio do site (ex: link "Gerir cookies" no footer) para reabrir
+// o painel de preferências depois do utilizador já ter aceitado/rejeitado.
+export const OPEN_COOKIE_PREFERENCES_EVENT = "enable-bank:open-cookie-preferences";
 
 interface Consent {
   essenciais: true;
@@ -24,33 +29,68 @@ function readConsent(): Consent | null {
 function writeConsent(estatisticas: boolean) {
   const consent: Consent = { essenciais: true, estatisticas, atualizado_em: new Date().toISOString() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(consent));
+  window.dispatchEvent(new Event(CONSENT_CHANGED_EVENT));
+}
+
+// Sincroniza com o localStorage via useSyncExternalStore em vez de useEffect+setState — isto
+// evita re-renders em cascata no mount e funciona corretamente com SSR (o snapshot do
+// servidor nunca toca localStorage). Uma escrita nesta aba não dispara o evento nativo
+// "storage" (só dispara nas OUTRAS abas), por isso disparamos um evento próprio em writeConsent.
+function subscribeToConsent(callback: () => void) {
+  window.addEventListener(CONSENT_CHANGED_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(CONSENT_CHANGED_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+function getConsentSnapshot() {
+  return readConsent() ? "recorded" : "missing";
+}
+
+function getServerConsentSnapshot() {
+  return "missing";
 }
 
 export default function CookieConsentBanner() {
-  const [visible, setVisible] = useState(false);
+  const consentStatus = useSyncExternalStore(subscribeToConsent, getConsentSnapshot, getServerConsentSnapshot);
+  const [forceOpen, setForceOpen] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [estatisticas, setEstatisticas] = useState(false);
 
   useEffect(() => {
-    if (!readConsent()) setVisible(true);
+    const reopen = () => {
+      const consent = readConsent();
+      setEstatisticas(consent?.estatisticas ?? false);
+      setShowPreferences(true);
+      setForceOpen(true);
+    };
+    window.addEventListener(OPEN_COOKIE_PREFERENCES_EVENT, reopen);
+    return () => window.removeEventListener(OPEN_COOKIE_PREFERENCES_EVENT, reopen);
   }, []);
 
+  const visible = consentStatus === "missing" || forceOpen;
   if (!visible) return null;
+
+  const close = () => {
+    setForceOpen(false);
+    setShowPreferences(false);
+  };
 
   const acceptAll = () => {
     writeConsent(true);
-    setVisible(false);
+    close();
   };
 
   const rejectAll = () => {
     writeConsent(false);
-    setVisible(false);
+    close();
   };
 
   const savePreferences = () => {
     writeConsent(estatisticas);
-    setShowPreferences(false);
-    setVisible(false);
+    close();
   };
 
   return (
@@ -99,7 +139,7 @@ export default function CookieConsentBanner() {
               <h2 className="text-base font-semibold text-gray-900">Preferências de cookies</h2>
               <button
                 type="button"
-                onClick={() => setShowPreferences(false)}
+                onClick={close}
                 aria-label="Fechar preferências"
                 className="text-gray-400 hover:text-gray-700 transition-colors"
               >
