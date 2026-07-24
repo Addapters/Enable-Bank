@@ -9,7 +9,8 @@ import SubmitButton from "@/components/ui/SubmitButton";
 import { createClient } from "@/lib/supabase/client";
 import { Sparkles, CheckCircle2, X, ChevronDown, AlertCircle, Loader2, CheckCircle } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { CONCELHOS } from "@/lib/data/concelhos";
+import { CONCELHOS, type Concelho } from "@/lib/data/concelhos";
+import { POSTAL_CODE_BY_CONCELHO } from "@/lib/data/postalCodes";
 
 interface Category {
   id: string;
@@ -148,6 +149,21 @@ export default function NewPublicationForm({
 
   // Tipo de transação (controla visibilidade do campo preço)
   const [selectedTipo, setSelectedTipo] = useState<"doacao" | "troca" | "venda" | "">("");
+
+  // Concelho + código postal (o código postal é pré-preenchido a partir do concelho
+  // escolhido, mas deixa de ser sobrescrito depois de o utilizador o editar manualmente)
+  const [concelho, setConcelho] = useState(defaultConcelho ?? "");
+  const [codigoPostal, setCodigoPostal] = useState(
+    () => POSTAL_CODE_BY_CONCELHO[defaultConcelho as Concelho] ?? ""
+  );
+  const [postalTouched, setPostalTouched] = useState(false);
+
+  const handleConcelhoChange = (value: string) => {
+    setConcelho(value);
+    if (!postalTouched) {
+      setCodigoPostal(POSTAL_CODE_BY_CONCELHO[value as Concelho] ?? "");
+    }
+  };
 
   // Category cascading
   const mainCategories = categories.filter((c) => c.parent_id === null);
@@ -561,7 +577,8 @@ export default function NewPublicationForm({
           name="concelho"
           label="Concelho"
           required
-          defaultValue={defaultConcelho ?? ""}
+          value={concelho}
+          onChange={(e) => handleConcelhoChange(e.target.value)}
           error={errors.concelho}
         >
           <option value="">Seleciona o concelho</option>
@@ -579,8 +596,10 @@ export default function NewPublicationForm({
           maxLength={4}
           inputMode="numeric"
           pattern="[0-9]{4}"
+          value={codigoPostal}
+          onChange={(e) => { setCodigoPostal(e.target.value); setPostalTouched(true); }}
           error={errors.codigo_postal}
-          hint="Usado para localização no mapa."
+          hint="Preenchido automaticamente a partir do concelho — podes corrigir se necessário."
         />
 
         <label className="flex items-center gap-3 cursor-pointer group">

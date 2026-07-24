@@ -17,6 +17,12 @@ export default function Navbar() {
   const [msgCount, setMsgCount] = useState(0);
   const supabase = createClient();
 
+  // Login/registo/logout são feitos por Server Actions (cliente Supabase do servidor), por
+  // isso o cliente Supabase do browser usado aqui nunca recebe um evento onAuthStateChange
+  // nessas ações — só refletiria sessões iniciadas diretamente no browser. Sem isto, a Navbar
+  // fica "presa" no estado com que montou, mesmo depois do redirect pós-login trocar a
+  // página, porque o layout (e a Navbar) não remonta nessa transição. Reler o utilizador a
+  // cada mudança de rota garante que a Navbar apanha sempre a sessão atual.
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
@@ -32,8 +38,15 @@ export default function Navbar() {
         supabase.from("messages").select("id", { count: "exact", head: true })
           .eq("lida", false).neq("sender_id", data.user.id)
           .then(({ count }) => setMsgCount(count ?? 0));
+      } else {
+        setIsAdmin(false);
+        setNotifCount(0);
+        setMsgCount(0);
       }
     });
+  }, [supabase, pathname]);
+
+  useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
     });

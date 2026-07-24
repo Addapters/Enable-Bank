@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import CookieConsentBanner from "@/components/layout/CookieConsentBanner";
 // import AdRail from "@/components/layout/AdRail"; // reservado para reintroduzir no futuro
 
 type Props = {
@@ -31,6 +32,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         {children}
       </main>
       <Footer />
+      <CookieConsentBanner />
     </NextIntlClientProvider>
   );
 }

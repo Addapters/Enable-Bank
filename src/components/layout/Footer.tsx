@@ -62,9 +62,9 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-purple-200">
-          <span className="flex items-center gap-1.5"><Heart className="w-3.5 h-3.5 text-purple-300" aria-hidden="true" />Doações e trocas sem comissões</span>
-          <span className="flex items-center gap-1.5"><MessageCircle className="w-3.5 h-3.5 text-purple-300" aria-hidden="true" />Chat direto entre utilizadores</span>
-          <span className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5 text-purple-300" aria-hidden="true" />Sistema de avaliações e confiança</span>
+          <span className="flex items-center gap-1.5"><Heart className="w-3.5 h-3.5 text-brand-peach" aria-hidden="true" />Doações e trocas sem comissões</span>
+          <span className="flex items-center gap-1.5"><MessageCircle className="w-3.5 h-3.5 text-brand-blue" aria-hidden="true" />Chat direto entre utilizadores</span>
+          <span className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5 text-brand-yellow" aria-hidden="true" />Sistema de avaliações e confiança</span>
         </div>
       </div>
     </footer>

@@ -45,8 +45,8 @@
     },
     "howItWorks": {
       "title": "Como funciona",
-      "step1": { "title": "Pesquisa", "description": "Descreve o que precisas em linguagem natural. O Banky encontra o produto certo para ti." },
-      "step2": { "title": "Contacta", "description": "Vê os contactos diretamente — sem intermediários, sem comissões." },
+      "step1": { "title": "Pesquisa", "description": "Descreve o que procuras" },
+      "step2": { "title": "Contacta", "description": "Vê os contactos diretamente, sem intermediários e sem comissões." },
       "step3": { "title": "Recebe", "description": "Combina a entrega ou recolha diretamente com quem tem o produto." }
     }
   },

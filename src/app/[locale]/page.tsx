@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { Search, MapPin, ArrowRight } from "lucide-react";
+import { Search, MapPin, ArrowRight, MessageCircle, PackageCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 import { getFavoriteState } from "@/lib/favorites/queries";
@@ -10,6 +10,51 @@ import { getPublicProfiles } from "@/lib/users/publicProfiles";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "Enable Bank — Plataforma de produtos de apoio" };
+}
+
+function StepCircle({
+  n,
+  icon: Icon,
+  circleBg,
+  iconColor,
+  title,
+  description,
+}: {
+  n: number;
+  icon: typeof Search;
+  circleBg: string;
+  iconColor: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex flex-col items-center text-center gap-3 mx-auto sm:max-w-[220px]">
+      <div className={`relative flex h-28 w-28 items-center justify-center rounded-full ${circleBg}`}>
+        <div className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-white shadow-sm">
+          <Icon className={`w-8 h-8 ${iconColor}`} aria-hidden="true" />
+        </div>
+        <span className="absolute -top-1 -left-1 flex h-9 w-9 items-center justify-center rounded-full bg-purple-700 text-white text-sm font-bold shadow-md">
+          {n}
+        </span>
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-purple-700">{n}º passo:</p>
+        <h3 className="text-lg font-bold text-gray-900">{title}</h3>
+        <p className="text-sm text-gray-500 mt-1">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function Arrow({ color }: { color: string }) {
+  return (
+    <div className="hidden sm:flex items-center justify-center h-28">
+      <svg className={color} width="56" height="24" viewBox="0 0 56 24" aria-hidden="true">
+        <line x1="0" y1="12" x2="44" y2="12" stroke="currentColor" strokeWidth="2" strokeDasharray="6 5" strokeLinecap="round" />
+        <path d="M40 5 L52 12 L40 19" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
 }
 
 async function getFeaturedPublications() {
@@ -54,6 +99,14 @@ export default async function HomePage() {
     { slug: "outros", iconPos: "-187.375px -85.33px", label: "Outros" },
   ];
 
+  // Cores secundárias a rodar pelos cartões de categoria, para o quadro não ficar só roxo.
+  const CATEGORY_STYLES = [
+    { bg: "bg-brand-blue/20", border: "hover:border-brand-blue" },
+    { bg: "bg-brand-green/20", border: "hover:border-brand-green" },
+    { bg: "bg-brand-peach/20", border: "hover:border-brand-peach" },
+    { bg: "bg-brand-yellow/20", border: "hover:border-brand-yellow" },
+  ];
+
   return (
     <div className="flex flex-col">
       <section className="bg-gradient-to-br from-purple-700 to-purple-900 text-white py-16 px-4">
@@ -78,21 +131,26 @@ export default async function HomePage() {
         <div className="max-w-5xl mx-auto">
           <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">Explorar por categorias</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {categories.map((cat) => (
-              <Link key={cat.slug} href={`/search?categoria=${cat.slug}`} className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all text-center group">
-                <span
-                  aria-hidden="true"
-                  style={{
-                    backgroundImage: "url(/category-icons.png)",
-                    backgroundSize: "256px 170.67px",
-                    backgroundPosition: cat.iconPos,
-                    width: 64,
-                    height: 64,
-                  }}
-                />
-                <span className="text-base font-medium text-gray-700 group-hover:text-purple-700">{cat.label}</span>
-              </Link>
-            ))}
+            {categories.map((cat, i) => {
+              const style = CATEGORY_STYLES[i % CATEGORY_STYLES.length];
+              return (
+                <Link key={cat.slug} href={`/search?categoria=${cat.slug}`} className={`flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-200 ${style.border} hover:shadow-md transition-all text-center group`}>
+                  <span className={`flex items-center justify-center rounded-full ${style.bg}`}>
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        backgroundImage: "url(/category-icons.png)",
+                        backgroundSize: "256px 170.67px",
+                        backgroundPosition: cat.iconPos,
+                        width: 64,
+                        height: 64,
+                      }}
+                    />
+                  </span>
+                  <span className="text-base font-medium text-gray-700 group-hover:text-purple-700">{cat.label}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -100,50 +158,13 @@ export default async function HomePage() {
       <section className="py-16 px-4 bg-white overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-16 text-center">{t("howItWorks.title")}</h2>
-          <div className="relative">
-            {/* Linha ondulada decorativa a ligar os passos (só desktop). Envolvida numa div
-                simples (não um elemento substituído como o svg) para que top/bottom negativos
-                calculem a altura corretamente, sem a proporção intrínseca do viewBox interferir. */}
-            <div className="hidden sm:block absolute left-0 right-0 -top-8 -bottom-8">
-              <svg
-                className="w-full h-full opacity-30"
-                viewBox="0 0 100 40"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-              >
-                <defs>
-                  <linearGradient id="howItWorksWave" x1="0" y1="0" x2="100%" y2="0">
-                    <stop offset="0%" stopColor="var(--color-purple-400)" />
-                    <stop offset="50%" stopColor="var(--color-purple-700)" />
-                    <stop offset="100%" stopColor="var(--color-purple-400)" />
-                  </linearGradient>
-                </defs>
-                <path
-                  d="M0,39 C 15,39 15,1 50,1 C 85,1 85,39 100,39"
-                  fill="none"
-                  stroke="url(#howItWorksWave)"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  vectorEffect="non-scaling-stroke"
-                />
-              </svg>
-            </div>
 
-            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8">
-              {(["step1", "step2", "step3"] as const).map((step, i) => {
-                const lift = i === 1 ? "sm:-translate-y-8" : "sm:translate-y-8";
-                return (
-                  <div key={step} className={`flex flex-col items-center text-center gap-2 ${lift}`}>
-                    <div className="w-16 h-16 rounded-full bg-purple-700 text-white font-bold text-2xl flex items-center justify-center shadow-lg shadow-purple-200">
-                      {i + 1}
-                    </div>
-                    <span className="text-xs font-semibold text-purple-700 uppercase tracking-wide">Passo {i + 1}</span>
-                    <h3 className="font-semibold text-gray-900">{t(`howItWorks.${step}.title`)}</h3>
-                    <p className="text-sm text-gray-500 max-w-[220px]">{t(`howItWorks.${step}.description`)}</p>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] gap-y-12 sm:items-start">
+            <StepCircle n={1} icon={Search} circleBg="bg-brand-blue/25" iconColor="text-purple-700" title={t("howItWorks.step1.title")} description={t("howItWorks.step1.description")} />
+            <Arrow color="text-purple-500" />
+            <StepCircle n={2} icon={MessageCircle} circleBg="bg-brand-green/25" iconColor="text-green-600" title={t("howItWorks.step2.title")} description={t("howItWorks.step2.description")} />
+            <Arrow color="text-green-500" />
+            <StepCircle n={3} icon={PackageCheck} circleBg="bg-brand-peach/25" iconColor="text-orange-600" title={t("howItWorks.step3.title")} description={t("howItWorks.step3.description")} />
           </div>
         </div>
       </section>

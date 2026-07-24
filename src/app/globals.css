@@ -11,6 +11,12 @@
   --color-purple-700: #645dd7;
   --color-purple-800: #554fb7;
   --color-purple-900: #464196;
+
+  /* Paleta secundária — usada para acentos decorativos, para o site não ser "só roxo" */
+  --color-brand-blue: #8fd7e8;
+  --color-brand-green: #87d177;
+  --color-brand-peach: #ebb1a0;
+  --color-brand-yellow: #f2d263;
 }
 
 :root {
