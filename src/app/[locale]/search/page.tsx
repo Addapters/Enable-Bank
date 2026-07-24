@@ -16,8 +16,8 @@ const PAGE_SIZE = 12;
 
 async function getCategories() {
   const supabase = await createClient();
-  const { data } = await supabase.from("categories").select("id, nome, slug").eq("ativa", true).is("parent_id", null).order("ordem");
-  return (data ?? []) as Pick<CategoryRow, "id" | "nome" | "slug">[];
+  const { data } = await supabase.from("categories").select("id, nome, slug, parent_id").eq("ativa", true).order("ordem");
+  return (data ?? []) as Pick<CategoryRow, "id" | "nome" | "slug" | "parent_id">[];
 }
 
 async function getResults(params: SearchParams) {
@@ -104,6 +104,15 @@ type Props = { searchParams: Promise<SearchParams> };
 export default async function SearchPage({ searchParams }: Props) {
   const params = await searchParams;
   const t = await getTranslations("search");
+
+  // Regista o termo pesquisado para a página de estatísticas ("pesquisas mais frequentes") —
+  // só na primeira página, para não contar cada página de paginação como uma pesquisa nova.
+  const searchTerm = params.q?.trim();
+  if (searchTerm && (!params.page || params.page === "1")) {
+    const supabase = await createClient();
+    supabase.from("search_logs").insert({ termo: searchTerm }).then(() => {});
+  }
+
   const [categories, { items, count, entityMap }] = await Promise.all([getCategories(), getResults(params)]);
   const { viewerId, favIds } = await getFavoriteState(items.map((p) => p.id));
   const page = Math.max(1, Number(params.page ?? 1));

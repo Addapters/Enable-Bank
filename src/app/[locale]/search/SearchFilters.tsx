@@ -2,12 +2,12 @@
 
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useRef } from "react";
-import { X, SlidersHorizontal, BadgeCheck } from "lucide-react";
+import { useCallback, useRef, useTransition } from "react";
+import { X, SlidersHorizontal, BadgeCheck, Loader2 } from "lucide-react";
 import { clsx } from "clsx";
 import type { CategoryRow } from "@/types/database";
 
-type Props = { categories: Pick<CategoryRow, "id" | "nome" | "slug">[] };
+type Props = { categories: Pick<CategoryRow, "id" | "nome" | "slug" | "parent_id">[] };
 
 const TIPOS = [
   { value: "doacao", label: "Doação",  color: "bg-green-100 text-green-800 border-green-200" },
@@ -26,12 +26,13 @@ export default function SearchFilters({ categories }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const entidadeInputRef = useRef<HTMLInputElement>(null);
+  const [isPending, startTransition] = useTransition();
 
   const updateParam = useCallback((key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value) params.set(key, value); else params.delete(key);
     params.delete("page");
-    router.push(`${pathname}?${params.toString()}`);
+    startTransition(() => router.push(`${pathname}?${params.toString()}`));
   }, [router, pathname, searchParams]);
 
   const toggleParam = useCallback((key: string, value: string) => {
@@ -41,7 +42,7 @@ export default function SearchFilters({ categories }: Props) {
   const activeFiltersCount = ["tipo", "publico", "categoria", "disponivel", "entidade_verificada", "entidade"].filter((k) => searchParams.has(k)).length;
   const clearAll = () => {
     const q = searchParams.get("q");
-    router.push(`${pathname}${q ? `?q=${q}` : ""}`);
+    startTransition(() => router.push(`${pathname}${q ? `?q=${q}` : ""}`));
   };
 
   const currentTipo             = searchParams.get("tipo");
@@ -50,6 +51,14 @@ export default function SearchFilters({ categories }: Props) {
   const currentDisponivel       = searchParams.get("disponivel");
   const currentVerificada       = searchParams.get("entidade_verificada");
   const currentEntidade         = searchParams.get("entidade") ?? "";
+
+  // ── Categoria + subcategoria em cascata ──────────────────────────────────────
+  const mainCategories = categories.filter((c) => !c.parent_id);
+  const selectedCat = categories.find((c) => c.slug === currentCategoria) ?? null;
+  const activeMainId = selectedCat ? (selectedCat.parent_id ?? selectedCat.id) : null;
+  const subCategories = activeMainId ? categories.filter((c) => c.parent_id === activeMainId) : [];
+  const activeMainSlug = activeMainId ? categories.find((c) => c.id === activeMainId)?.slug ?? null : null;
+  const activeSubSlug = selectedCat?.parent_id ? selectedCat.slug : null;
 
   const handleEntidadeSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -69,6 +78,7 @@ export default function SearchFilters({ categories }: Props) {
               {activeFiltersCount}
             </span>
           )}
+          {isPending && <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin" aria-label="A atualizar resultados..." />}
         </div>
         {activeFiltersCount > 0 && (
           <button onClick={clearAll} className="text-xs text-purple-700 hover:underline flex items-center gap-1">
@@ -76,6 +86,8 @@ export default function SearchFilters({ categories }: Props) {
           </button>
         )}
       </div>
+
+      <div className={`space-y-5 transition-opacity ${isPending ? "opacity-60 pointer-events-none" : ""}`} aria-busy={isPending}>
 
       {/* Tipo de transação */}
       <fieldset>
@@ -108,12 +120,21 @@ export default function SearchFilters({ categories }: Props) {
       {/* Categoria */}
       <fieldset>
         <legend className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Categoria</legend>
-        <select value={currentCategoria ?? ""} onChange={(e) => updateParam("categoria", e.target.value || null)}
+        <select value={activeMainSlug ?? ""} onChange={(e) => updateParam("categoria", e.target.value || null)}
           className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
           aria-label="Filtrar por categoria">
           <option value="">Todas as categorias</option>
-          {categories.map((c) => <option key={c.id} value={c.slug}>{c.nome}</option>)}
+          {mainCategories.map((c) => <option key={c.id} value={c.slug}>{c.nome}</option>)}
         </select>
+
+        {subCategories.length > 0 && (
+          <select value={activeSubSlug ?? ""} onChange={(e) => updateParam("categoria", e.target.value || activeMainSlug)}
+            className="w-full mt-2 text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-600"
+            aria-label="Filtrar por subcategoria">
+            <option value="">Todas as subcategorias</option>
+            {subCategories.map((c) => <option key={c.id} value={c.slug}>{c.nome}</option>)}
+          </select>
+        )}
       </fieldset>
 
       {/* Disponibilidade */}
@@ -176,6 +197,7 @@ export default function SearchFilters({ categories }: Props) {
           )}
         </div>
       </fieldset>
+      </div>
     </div>
   );
 }

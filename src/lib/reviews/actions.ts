@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 export type ReviewResult = { success: true } | { success: false; error: string };
 
 export async function submitReview(
-  publicationId: string,
+  reviewedUserId: string,
   rating: number,
   comentario: string
 ): Promise<ReviewResult> {
@@ -23,21 +23,22 @@ export async function submitReview(
     .upsert(
       {
         reviewer_id: user.id,
-        publication_id: publicationId,
+        reviewed_user_id: reviewedUserId,
         rating,
         comentario: comentario.trim() || null,
       },
-      { onConflict: "reviewer_id,publication_id" }
+      { onConflict: "reviewer_id,reviewed_user_id" }
     );
 
   if (error) {
-    // A mensagem da trigger (ex: "Não podes avaliar o teu próprio anúncio") chega aqui.
-    return { success: false, error: error.message.includes("próprio anúncio")
-      ? "Não podes avaliar o teu próprio anúncio."
+    // A mensagem da trigger (ex: "Não podes avaliar-te a ti mesmo") chega aqui.
+    return { success: false, error: error.message.includes("a ti mesmo")
+      ? "Não podes avaliar-te a ti mesmo."
       : "Erro ao guardar a avaliação. Tenta novamente." };
   }
 
-  revalidatePath("/publications/" + publicationId);
+  revalidatePath("/utilizadores/" + reviewedUserId);
+  revalidatePath("/entidades", "layout");
   return { success: true };
 }
 

@@ -71,34 +71,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {featured.length > 0 && (
-        <section className="py-12 px-4 bg-white border-b border-gray-100">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Novos produtos</h2>
-              <Link href="/search" className="text-sm font-medium text-purple-700 hover:underline shrink-0">
-                Ver todos →
-              </Link>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {featured.map((pub) => (
-                <PublicationCard
-                  key={pub.id}
-                  publication={pub}
-                  publisher={toPublisherInfo(pub.publisher as RawPublisher, entityMap)}
-                  showFavorite={viewerId !== pub.user_id}
-                  isFavorited={favIds.has(pub.id)}
-                  isAuthenticated={!!viewerId}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       <section className="py-12 px-4 bg-gray-50">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">{t("hero.orBrowse")}</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">Explorar por categorias</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {categories.map((cat) => (
               <Link key={cat.slug} href={`/search?categoria=${cat.slug}`} className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-gray-200 hover:border-purple-300 hover:shadow-md transition-all text-center group">
@@ -153,11 +128,10 @@ export default async function HomePage() {
 
             <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-12 sm:gap-8">
               {(["step1", "step2", "step3"] as const).map((step, i) => {
-                const shades = ["bg-purple-500", "bg-purple-700", "bg-purple-500"];
                 const lift = i === 1 ? "sm:-translate-y-8" : "sm:translate-y-8";
                 return (
                   <div key={step} className={`flex flex-col items-center text-center gap-2 ${lift}`}>
-                    <div className={`w-16 h-16 rounded-full ${shades[i]} text-white font-bold text-2xl flex items-center justify-center shadow-lg shadow-purple-200`}>
+                    <div className="w-16 h-16 rounded-full bg-purple-700 text-white font-bold text-2xl flex items-center justify-center shadow-lg shadow-purple-200">
                       {i + 1}
                     </div>
                     <span className="text-xs font-semibold text-purple-700 uppercase tracking-wide">Passo {i + 1}</span>
@@ -170,6 +144,31 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {featured.length > 0 && (
+        <section className="py-12 px-4 bg-white border-b border-gray-100">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900">Novos produtos</h2>
+              <Link href="/search" className="text-sm font-medium text-purple-700 hover:underline shrink-0">
+                Ver todos →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {featured.map((pub) => (
+                <PublicationCard
+                  key={pub.id}
+                  publication={pub}
+                  publisher={toPublisherInfo(pub.publisher as RawPublisher, entityMap)}
+                  showFavorite={viewerId !== pub.user_id}
+                  isFavorited={favIds.has(pub.id)}
+                  isAuthenticated={!!viewerId}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="py-16 px-4 bg-gradient-to-br from-purple-700 to-purple-900">
         <div className="max-w-2xl mx-auto text-center">

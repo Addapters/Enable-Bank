@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import NewPublicationForm from "./NewPublicationForm";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, FileSpreadsheet, ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 
 interface CategoryRow {
@@ -30,7 +30,7 @@ export default async function NewPublicationPage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("email, nome, concelho")
+    .select("email, nome, concelho, tipo")
     .eq("id", user.id)
     .single();
 
@@ -40,7 +40,7 @@ export default async function NewPublicationPage() {
     .eq("user_id", user.id)
     .single();
 
-  const userProfile = profile as { email?: string; nome?: string; concelho?: string | null } | null;
+  const userProfile = profile as { email?: string; nome?: string; concelho?: string | null; tipo?: string } | null;
   const cats = (categories as unknown as CategoryRow[]) ?? [];
   const defaultEmail =
     (contact as { email_contacto?: string } | null)?.email_contacto ??
@@ -69,6 +69,22 @@ export default async function NewPublicationPage() {
             </div>
           </div>
         </div>
+
+        {userProfile?.tipo === "entidade" && (
+          <Link
+            href="/publications/bulk"
+            className="flex items-center gap-3 mb-6 bg-purple-50 border border-purple-200 rounded-xl px-4 py-3 hover:bg-purple-100 transition-colors group"
+          >
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white shrink-0">
+              <FileSpreadsheet className="w-4 h-4 text-purple-700" aria-hidden="true" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-purple-900">Tens muitos produtos para publicar?</p>
+              <p className="text-xs text-purple-700">Publica em massa a partir de um ficheiro CSV.</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-purple-400 group-hover:translate-x-0.5 transition-transform shrink-0" aria-hidden="true" />
+          </Link>
+        )}
 
         <NewPublicationForm
           categories={cats}

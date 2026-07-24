@@ -11,8 +11,6 @@ import FavoriteButton from "@/components/publications/FavoriteButton";
 import PhotoGallery from "./PhotoGallery";
 import type { PublicationRow, CategoryRow, PhotoRow, UserRow } from "@/types/database";
 import { getFavoriteState } from "@/lib/favorites/queries";
-import { getMyReviewForPublication } from "@/lib/reviews/queries";
-import ReviewForm from "@/components/reviews/ReviewForm";
 import SendMessageButton from "@/components/messages/SendMessageButton";
 
 type Props = { params: Promise<{ id: string; locale: string }> };
@@ -54,7 +52,6 @@ export default async function PublicationDetailPage({ params }: Props) {
 
   const pub = data as unknown as PublicationFull;
   const { viewerId, favIds } = await getFavoriteState([pub.id]);
-  const myReview = viewerId && viewerId !== pub.user_id ? await getMyReviewForPublication(pub.id) : null;
   const typeStyle = TYPE_STYLES[pub.tipo];
   const sortedPhotos = [...pub.photos].sort((a, b) => a.ordem - b.ordem);
   const createdAt = new Intl.DateTimeFormat("pt-PT", { day: "numeric", month: "long", year: "numeric" }).format(new Date(pub.criado_em));
@@ -110,7 +107,13 @@ export default async function PublicationDetailPage({ params }: Props) {
               </p>
             )}
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-500">
-              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" aria-hidden="true" />{pub.concelho}</span>
+              {pub.latitude !== null && pub.longitude !== null ? (
+                <Link href={`/map?lat=${pub.latitude}&lng=${pub.longitude}&id=${pub.id}`} className="flex items-center gap-1 hover:text-purple-700">
+                  <MapPin className="w-4 h-4" aria-hidden="true" />{pub.concelho}
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1"><MapPin className="w-4 h-4" aria-hidden="true" />{pub.concelho}</span>
+              )}
               {pub.category && <Link href={`/search?categoria=${pub.category.slug}`} className="flex items-center gap-1 hover:text-purple-700"><Tag className="w-4 h-4" aria-hidden="true" />{pub.category.nome}</Link>}
               <span className="flex items-center gap-1"><Clock className="w-4 h-4" aria-hidden="true" />Publicado em {createdAt}</span>
             </div>
@@ -156,13 +159,6 @@ export default async function PublicationDetailPage({ params }: Props) {
               </p>
             )}
           </div>
-
-          {viewerId !== pub.user_id && (
-            <div>
-              <h2 className="text-base font-semibold text-gray-900 mb-2">Avaliação</h2>
-              <ReviewForm publicationId={pub.id} isAuthenticated={!!viewerId} existingReview={myReview} />
-            </div>
-          )}
         </aside>
       </div>
     </div>

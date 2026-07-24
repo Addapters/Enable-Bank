@@ -10,8 +10,9 @@ import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 import type { PublisherInfo } from "@/components/publications/PublisherAvatar";
 import { getFavoriteState } from "@/lib/favorites/queries";
-import { getReviewsForUser } from "@/lib/reviews/queries";
+import { getReviewsForUser, getMyReviewForUser } from "@/lib/reviews/queries";
 import ReviewsList from "@/components/reviews/ReviewsList";
+import ReviewForm from "@/components/reviews/ReviewForm";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
@@ -88,6 +89,7 @@ export default async function EntityPublicPage({ params }: Props) {
   const pubs = (rawPubs as unknown as RawPub[]) ?? [];
   const { favIds } = await getFavoriteState(pubs.map((p) => p.id));
   const { reviews, average, count } = await getReviewsForUser(entity.user_id);
+  const myReview = viewer && viewer.id !== entity.user_id ? await getMyReviewForUser(entity.user_id) : null;
 
   // Agrupa por categoria
   const grouped = new Map<string, { nome: string; pubs: RawPub[] }>();
@@ -284,8 +286,11 @@ export default async function EntityPublicPage({ params }: Props) {
               ))
             )}
 
-            <div className="bg-white rounded-2xl border border-gray-200 p-5">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Avaliações</h2>
+            <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-5">
+              <h2 className="text-lg font-bold text-gray-900">Avaliações</h2>
+              {!isOwnProfile && (
+                <ReviewForm reviewedUserId={entity.user_id} isAuthenticated={!!viewer} existingReview={myReview} />
+              )}
               <ReviewsList reviews={reviews} average={average} count={count} />
             </div>
           </main>

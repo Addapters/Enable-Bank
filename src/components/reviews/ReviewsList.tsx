@@ -41,9 +41,6 @@ export default function ReviewsList({ reviews, average, count }: Props) {
               </div>
               <StarRating rating={r.rating} size={14} className="mb-1" />
               {r.comentario && <p className="text-sm text-gray-600">{r.comentario}</p>}
-              {r.publication_titulo && (
-                <p className="text-xs text-gray-400 mt-1">Sobre: {r.publication_titulo}</p>
-              )}
             </li>
           ))}
         </ul>

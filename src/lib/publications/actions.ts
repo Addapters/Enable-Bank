@@ -11,7 +11,7 @@ export type PublicationFormState =
   | undefined;
 
 // ── Geocodificação assíncrona após guardar ─────────────────────────────────────
-async function geocodeAndUpdate(
+export async function geocodeAndUpdate(
   supabase: Awaited<ReturnType<typeof createClient>>,
   publicationId: string,
   userId: string,

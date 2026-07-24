@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import { Filter, List, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -50,9 +50,10 @@ interface Props {
   categories: { id: string; nome: string }[];
   locale: string;
   searchParams: Record<string, string>;
+  focus?: { lat: number; lng: number; id: string | null } | null;
 }
 
-export default function MapClient({ publications, categories, locale, searchParams }: Props) {
+export default function MapClient({ publications, categories, locale, searchParams, focus }: Props) {
   const [tipo, setTipo]           = useState(searchParams.tipo ?? "");
   const [publico, setPublico]     = useState(searchParams.publico ?? "");
   const [categoria, setCategoria] = useState(searchParams.categoria ?? "");
@@ -195,7 +196,7 @@ export default function MapClient({ publications, categories, locale, searchPara
 
       {/* Mapa */}
       <div className="flex-1 relative">
-        <LeafletMap publications={filtered} locale={locale} />
+        <LeafletMap publications={filtered} locale={locale} focus={focus ?? null} />
       </div>
     </div>
   );

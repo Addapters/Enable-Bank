@@ -16,7 +16,7 @@ export async function getReviewsForUser(userId: string): Promise<ReviewSummary> 
   const supabase = await createClient();
   const { data } = await supabase
     .from("reviews")
-    .select(`id, reviewer_id, reviewed_user_id, publication_id, publication_titulo, rating, comentario, criado_em, atualizado_em,
+    .select(`id, reviewer_id, reviewed_user_id, rating, comentario, criado_em, atualizado_em,
       reviewer:users!reviewer_id(nome, tipo, avatar_url)`)
     .eq("reviewed_user_id", userId)
     .order("criado_em", { ascending: false });
@@ -28,17 +28,17 @@ export async function getReviewsForUser(userId: string): Promise<ReviewSummary> 
   return { reviews, average, count };
 }
 
-/** A avaliação que o utilizador autenticado já deixou para este anúncio, se existir. */
-export async function getMyReviewForPublication(publicationId: string): Promise<ReviewRow | null> {
+/** A avaliação que o utilizador autenticado já deixou para este utilizador, se existir. */
+export async function getMyReviewForUser(reviewedUserId: string): Promise<ReviewRow | null> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
   const { data } = await supabase
     .from("reviews")
-    .select("id, reviewer_id, reviewed_user_id, publication_id, publication_titulo, rating, comentario, criado_em, atualizado_em")
+    .select("id, reviewer_id, reviewed_user_id, rating, comentario, criado_em, atualizado_em")
     .eq("reviewer_id", user.id)
-    .eq("publication_id", publicationId)
+    .eq("reviewed_user_id", reviewedUserId)
     .maybeSingle();
 
   return (data as unknown as ReviewRow | null) ?? null;

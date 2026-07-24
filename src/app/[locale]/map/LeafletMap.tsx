@@ -64,15 +64,18 @@ function createPopupHtml(pub: MapPublication, locale: string): string {
 interface Props {
   publications: MapPublication[];
   locale: string;
+  focus?: { lat: number; lng: number; id: string | null } | null;
 }
 
-export default function LeafletMap({ publications, locale }: Props) {
+export default function LeafletMap({ publications, locale, focus }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef       = useRef<Leaflet.Map | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const LRef         = useRef<any>(null);
   const layerRef     = useRef<Leaflet.LayerGroup | null>(null);
+  const markersRef   = useRef<Map<string, Leaflet.Marker>>(new Map());
   const readyRef     = useRef(false);
+  const focusAppliedRef = useRef(false);
 
   // ── Inicialização do mapa (uma só vez) ──────────────────────────────────────
   useEffect(() => {
@@ -95,8 +98,8 @@ export default function LeafletMap({ publications, locale }: Props) {
       });
 
       const map = L.map(containerRef.current!, {
-        center: [39.5, -8.0],
-        zoom: 7,
+        center: focus ? [focus.lat, focus.lng] : [39.5, -8.0],
+        zoom: focus ? 13 : 7,
         zoomControl: true,
       });
 
@@ -110,6 +113,11 @@ export default function LeafletMap({ publications, locale }: Props) {
       readyRef.current = true;
 
       addMarkers(L, map, publications);
+
+      if (focus?.id && !focusAppliedRef.current) {
+        focusAppliedRef.current = true;
+        markersRef.current.get(focus.id)?.openPopup();
+      }
     }
 
     init();
@@ -142,6 +150,7 @@ export default function LeafletMap({ publications, locale }: Props) {
       map.removeLayer(layerRef.current);
       layerRef.current = null;
     }
+    markersRef.current.clear();
     if (pubs.length === 0) return;
 
     const layer = L.layerGroup();
@@ -161,6 +170,7 @@ export default function LeafletMap({ publications, locale }: Props) {
         className: "enable-bank-popup",
       });
       layer.addLayer(marker);
+      markersRef.current.set(pub.id, marker);
     });
 
     layer.addTo(map);

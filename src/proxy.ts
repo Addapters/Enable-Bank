@@ -1,12 +1,35 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest, type NextFetchEvent } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 
 const intlMiddleware = createMiddleware(routing);
 
-export async function proxy(request: NextRequest) {
+// Regista uma visita de página (analítica interna do backoffice) sem atrasar a resposta —
+// corre em background via waitUntil, e ignora prefetches do Next.js (link hover) para não
+// inflacionar as contagens com navegação que o utilizador nunca chegou a fazer.
+function logPageView(request: NextRequest, event: NextFetchEvent) {
+  const { pathname } = request.nextUrl;
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api")) return;
+  if (request.headers.get("next-router-prefetch") || request.headers.get("purpose") === "prefetch") return;
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return;
+
+  event.waitUntil(
+    fetch(`${url}/rest/v1/page_views`, {
+      method: "POST",
+      headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ pathname }),
+    }).catch(() => {})
+  );
+}
+
+export async function proxy(request: NextRequest, event: NextFetchEvent) {
   const intlResponse = intlMiddleware(request);
+
+  logPageView(request, event);
 
   const { pathname } = request.nextUrl;
 

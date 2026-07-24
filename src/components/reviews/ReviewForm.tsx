@@ -8,12 +8,12 @@ import { submitReview, deleteReview } from "@/lib/reviews/actions";
 import type { ReviewRow } from "@/types/database";
 
 interface Props {
-  publicationId: string;
+  reviewedUserId: string;
   isAuthenticated: boolean;
   existingReview: ReviewRow | null;
 }
 
-export default function ReviewForm({ publicationId, isAuthenticated, existingReview }: Props) {
+export default function ReviewForm({ reviewedUserId, isAuthenticated, existingReview }: Props) {
   const [rating, setRating] = useState(existingReview?.rating ?? 0);
   const [comentario, setComentario] = useState(existingReview?.comentario ?? "");
   const [pending, startTransition] = useTransition();
@@ -38,7 +38,7 @@ export default function ReviewForm({ publicationId, isAuthenticated, existingRev
     if (rating < 1) { setError("Escolhe uma classificação de 1 a 5 estrelas."); return; }
     setError(null);
     startTransition(async () => {
-      const result = await submitReview(publicationId, rating, comentario);
+      const result = await submitReview(reviewedUserId, rating, comentario);
       if (!result.success) { setError(result.error); return; }
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

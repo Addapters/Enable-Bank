@@ -133,8 +133,6 @@ export interface ReviewRow {
   id: string;
   reviewer_id: string;
   reviewed_user_id: string;
-  publication_id: string | null;
-  publication_titulo: string | null;
   rating: number;
   comentario: string | null;
   criado_em: string;

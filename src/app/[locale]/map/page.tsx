@@ -10,6 +10,9 @@ type SearchParams = {
   publico?: string;
   categoria?: string;
   disponivel?: string;
+  lat?: string;
+  lng?: string;
+  id?: string;
 };
 
 type Props = { searchParams: Promise<SearchParams>; params: Promise<{ locale: string }> };
@@ -109,12 +112,19 @@ export default async function MapPage({ searchParams, params }: Props) {
   if (sp.categoria) searchParamsObj.categoria = sp.categoria;
   if (sp.disponivel) searchParamsObj.disponivel = sp.disponivel;
 
+  const lat = sp.lat ? parseFloat(sp.lat) : null;
+  const lng = sp.lng ? parseFloat(sp.lng) : null;
+  const focus = lat !== null && lng !== null && !isNaN(lat) && !isNaN(lng)
+    ? { lat, lng, id: sp.id ?? null }
+    : null;
+
   return (
     <MapClient
       publications={publications}
       categories={categories}
       locale={locale}
       searchParams={searchParamsObj}
+      focus={focus}
     />
   );
 }

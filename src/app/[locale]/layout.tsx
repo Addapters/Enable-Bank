@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import AdRail from "@/components/layout/AdRail";
 
 type Props = {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ export default async function LocaleLayout({ children, params }: Props) {
         Saltar para o conteúdo principal
       </a>
       <Navbar />
+      <AdRail />
       <main id="main-content" className="flex-1">
         {children}
       </main>
