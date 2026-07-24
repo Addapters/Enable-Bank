@@ -30,7 +30,7 @@ export default async function ContactInfo({ userId, showDisclaimer = true, showI
     .single();
 
   const { data: publisher } = await supabase
-    .from("users")
+    .from("user_public_profiles")
     .select("nome, tipo, avatar_url")
     .eq("id", userId)
     .single();
@@ -43,7 +43,7 @@ export default async function ContactInfo({ userId, showDisclaimer = true, showI
   let isVerified = false;
   if (typedPublisher?.tipo === "entidade") {
     const { data: ent } = await supabase
-      .from("entities")
+      .from("entities_public")
       .select("verificada, logo_url")
       .eq("user_id", userId)
       .single();

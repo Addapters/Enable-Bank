@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import MapClient from "./MapClient";
 import type { MapPublication } from "./MapClient";
+import { getPublicProfiles } from "@/lib/users/publicProfiles";
 
 export const metadata: Metadata = { title: "Mapa de anúncios — Enable Bank" };
 
@@ -43,14 +44,16 @@ export default async function MapPage({ searchParams, params }: Props) {
       id, titulo, tipo, publico, disponivel, concelho,
       latitude, longitude, user_id,
       category:categories!categoria_id(nome),
-      photos(url, ordem),
-      publisher:users!user_id(id, nome, tipo)
+      photos(url, ordem)
     `)
     .eq("moderacao", "ativo")
     .not("latitude", "is", null)
     .not("longitude", "is", null);
 
-  const rawPubs = (raw ?? []) as unknown as RawPub[];
+  type RawPubRow = Omit<RawPub, "publisher"> & { user_id: string };
+  const rawRows = (raw ?? []) as unknown as RawPubRow[];
+  const profiles = await getPublicProfiles(supabase, rawRows.map((p) => p.user_id));
+  const rawPubs: RawPub[] = rawRows.map((p) => ({ ...p, publisher: profiles.get(p.user_id) ?? null }));
 
   // Batch-fetch entity data
   const entityUserIds = [...new Set(
@@ -62,7 +65,7 @@ export default async function MapPage({ searchParams, params }: Props) {
   const entityMap: Record<string, { logo_url: string | null; verificada: boolean }> = {};
   if (entityUserIds.length > 0) {
     const { data: entities } = await supabase
-      .from("entities")
+      .from("entities_public")
       .select("user_id, logo_url, verificada")
       .in("user_id", entityUserIds);
     for (const e of (entities ?? []) as { user_id: string; logo_url: string | null; verificada: boolean }[]) {

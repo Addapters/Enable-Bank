@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import PublicationCard from "@/components/publications/PublicationCard";
 import { getFavoriteState } from "@/lib/favorites/queries";
 import { getEntityMap, toPublisherInfo, type RawPublisher } from "@/lib/publications/publisherInfo";
+import { getPublicProfiles } from "@/lib/users/publicProfiles";
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: "Enable Bank — Plataforma de produtos de apoio" };
@@ -16,12 +17,14 @@ async function getFeaturedPublications() {
     const supabase = await createClient();
     const { data } = await supabase
       .from("publications")
-      .select("id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, preco, negociavel, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)")
+      .select("id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, preco, negociavel, category:categories!categoria_id(nome), photos(url, ordem)")
       .eq("moderacao", "ativo")
       .order("criado_em", { ascending: false })
       .limit(8);
+    const rows = (data ?? []) as unknown as { user_id: string }[];
+    const profiles = await getPublicProfiles(supabase, rows.map((p) => p.user_id));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return (data ?? []) as any[];
+    return rows.map((p) => ({ ...p, publisher: profiles.get(p.user_id) ?? null })) as any[];
   } catch {
     return [];
   }

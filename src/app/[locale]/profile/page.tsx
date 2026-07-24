@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { Building2, BadgeCheck } from "lucide-react";
 import ParticularProfileForm from "./ParticularProfileForm";
 import EntityProfileForm from "./EntityProfileForm";
+import DeleteAccountSection from "./DeleteAccountSection";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "O meu perfil — Enable Bank" };
@@ -140,6 +141,8 @@ export default async function ProfilePage() {
             </Link>
           </div>
         </div>
+
+        <DeleteAccountSection />
       </div>
     </div>
   );

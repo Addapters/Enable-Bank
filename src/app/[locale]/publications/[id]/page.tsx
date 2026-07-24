@@ -12,6 +12,7 @@ import PhotoGallery from "./PhotoGallery";
 import type { PublicationRow, CategoryRow, PhotoRow, UserRow } from "@/types/database";
 import { getFavoriteState } from "@/lib/favorites/queries";
 import SendMessageButton from "@/components/messages/SendMessageButton";
+import { getPublicProfiles } from "@/lib/users/publicProfiles";
 
 type Props = { params: Promise<{ id: string; locale: string }> };
 type PublicationFull = PublicationRow & {
@@ -43,14 +44,20 @@ export default async function PublicationDetailPage({ params }: Props) {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("publications")
-    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, preco, negociavel, category:categories!categoria_id(nome, slug), photos(id, url, ordem), user:users!user_id(id, nome, tipo)`)
+    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, preco, negociavel, category:categories!categoria_id(nome, slug), photos(id, url, ordem)`)
     .eq("id", id)
     .eq("moderacao", "ativo")
     .single();
 
   if (error || !data) notFound();
 
-  const pub = data as unknown as PublicationFull;
+  const rawPub = data as unknown as Omit<PublicationFull, "user"> & { user_id: string };
+  const profiles = await getPublicProfiles(supabase, [rawPub.user_id]);
+  const profile = profiles.get(rawPub.user_id) ?? null;
+  const pub: PublicationFull = {
+    ...rawPub,
+    user: profile ? { id: profile.id, nome: profile.nome, tipo: profile.tipo as UserRow["tipo"] } : null,
+  };
   const { viewerId, favIds } = await getFavoriteState([pub.id]);
   const typeStyle = TYPE_STYLES[pub.tipo];
   const sortedPhotos = [...pub.photos].sort((a, b) => a.ordem - b.ordem);

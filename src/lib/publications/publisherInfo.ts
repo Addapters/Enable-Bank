@@ -15,7 +15,7 @@ export async function getEntityMap(supabase: SupabaseClient<any>, publishers: Ra
   const entityMap: EntityMap = {};
   if (entityUserIds.length > 0) {
     const { data } = await supabase
-      .from("entities")
+      .from("entities_public")
       .select("user_id, logo_url, verificada")
       .in("user_id", entityUserIds);
     for (const e of (data ?? []) as { user_id: string; logo_url: string | null; verificada: boolean }[]) {

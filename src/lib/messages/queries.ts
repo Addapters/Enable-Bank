@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { MessageRow } from "@/types/database";
+import { getPublicProfiles } from "@/lib/users/publicProfiles";
 
 interface ParticipantInfo {
   id: string;
@@ -16,8 +17,6 @@ interface RawConversation {
   publication_titulo: string | null;
   last_message_at: string | null;
   criado_em: string;
-  a: ParticipantInfo | null;
-  b: ParticipantInfo | null;
 }
 
 export interface ConversationSummary {
@@ -31,9 +30,7 @@ export interface ConversationSummary {
   unreadCount: number;
 }
 
-const CONVERSATION_SELECT = `id, user_a, user_b, publication_id, publication_titulo, last_message_at, criado_em,
-  a:users!user_a(id, nome, tipo, avatar_url),
-  b:users!user_b(id, nome, tipo, avatar_url)`;
+const CONVERSATION_SELECT = `id, user_a, user_b, publication_id, publication_titulo, last_message_at, criado_em`;
 
 /** Todas as conversas do utilizador autenticado, com o outro participante, a última mensagem e não-lidas. */
 export async function getConversations(): Promise<ConversationSummary[]> {
@@ -49,6 +46,9 @@ export async function getConversations(): Promise<ConversationSummary[]> {
 
   const conversations = (convRows ?? []) as unknown as RawConversation[];
   if (conversations.length === 0) return [];
+
+  const otherIds = conversations.map((c) => (c.user_a === user.id ? c.user_b : c.user_a));
+  const profiles = await getPublicProfiles(supabase, otherIds);
 
   const ids = conversations.map((c) => c.id);
   const { data: msgRows } = await supabase
@@ -72,16 +72,19 @@ export async function getConversations(): Promise<ConversationSummary[]> {
     }
   }
 
-  return conversations.map((c) => ({
-    id: c.id,
-    publication_id: c.publication_id,
-    publication_titulo: c.publication_titulo,
-    last_message_at: c.last_message_at,
-    criado_em: c.criado_em,
-    otherUser: c.user_a === user.id ? c.b : c.a,
-    lastMessage: lastMessageByConv.get(c.id) ?? null,
-    unreadCount: unreadByConv.get(c.id) ?? 0,
-  }));
+  return conversations.map((c) => {
+    const otherId = c.user_a === user.id ? c.user_b : c.user_a;
+    return {
+      id: c.id,
+      publication_id: c.publication_id,
+      publication_titulo: c.publication_titulo,
+      last_message_at: c.last_message_at,
+      criado_em: c.criado_em,
+      otherUser: profiles.get(otherId) ?? null,
+      lastMessage: lastMessageByConv.get(c.id) ?? null,
+      unreadCount: unreadByConv.get(c.id) ?? 0,
+    };
+  });
 }
 
 export interface ConversationDetail {
@@ -106,12 +109,14 @@ export async function getConversation(conversationId: string): Promise<Conversat
 
   if (!data) return null;
   const c = data as unknown as RawConversation;
+  const otherId = c.user_a === user.id ? c.user_b : c.user_a;
+  const profiles = await getPublicProfiles(supabase, [otherId]);
 
   return {
     id: c.id,
     publication_id: c.publication_id,
     publication_titulo: c.publication_titulo,
-    otherUser: c.user_a === user.id ? c.b : c.a,
+    otherUser: profiles.get(otherId) ?? null,
     viewerId: user.id,
   };
 }

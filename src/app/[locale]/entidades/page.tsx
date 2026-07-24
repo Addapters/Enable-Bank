@@ -23,7 +23,7 @@ export default async function EntidadesPage() {
   const supabase = await createClient();
 
   const { data: raw } = await supabase
-    .from("entities")
+    .from("entities_public")
     .select("id, nome, tipo, slug, concelho, descricao, logo_url, verificada, user_id")
     .order("verificada", { ascending: false })
     .order("nome");

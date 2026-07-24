@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 
 function toSlug(text: string): string {
   return text
@@ -91,6 +91,14 @@ export async function updateEntityProfile(
   if (!email_contacto)        fields.email_contacto = "O email institucional é obrigatório.";
   if (!pessoa_contacto_nome)  fields.pessoa_contacto_nome = "O nome da pessoa de contacto é obrigatório.";
   if (!pessoa_contacto_cargo) fields.pessoa_contacto_cargo = "O cargo é obrigatório.";
+  if (website) {
+    try {
+      const parsed = new URL(website);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error("scheme");
+    } catch {
+      fields.website = "Indica um URL válido (http:// ou https://).";
+    }
+  }
   if (Object.keys(fields).length) return { error: "Corrige os erros abaixo.", fields };
 
   // Atualiza nome na tabela users (é o nome da org para entidades)
@@ -106,7 +114,7 @@ export async function updateEntityProfile(
   const ownId = (existingEntity as { id: string; slug: string | null } | null)?.id ?? null;
   while (true) {
     const { data: conflict } = await supabase
-      .from("entities").select("id").eq("slug", slug).single();
+      .from("entities_public").select("id").eq("slug", slug).single();
     const conflictId = (conflict as { id: string } | null)?.id;
     if (!conflictId || conflictId === ownId) break;
     slug = `${baseSlug}-${counter++}`;
@@ -147,4 +155,27 @@ export async function updateEntityProfile(
   revalidatePath("/pt/profile");
   revalidatePath("/pt/dashboard");
   return { success: true };
+}
+
+// ── Eliminar conta (direito ao apagamento — RGPD art. 17) ──────────────────────
+export async function deleteMyAccount(): Promise<ProfileResult> {
+  const { supabase, user } = await getAuthUser();
+  const adminClient = await createAdminClient();
+
+  // As restantes tabelas (favoritos, notificações, avaliações, conversas,
+  // mensagens, entidade) têm ON DELETE CASCADE para users.id — remover a
+  // publicação e o registo em "users" é suficiente para as limpar também.
+  const { error: pubError } = await adminClient.from("publications").delete().eq("user_id", user.id);
+  if (pubError) return { error: "Erro ao eliminar os teus anúncios." };
+
+  await adminClient.from("contacts").delete().eq("user_id", user.id);
+
+  const { error: userError } = await adminClient.from("users").delete().eq("id", user.id);
+  if (userError) return { error: "Erro ao eliminar o registo da conta." };
+
+  const { error: authError } = await adminClient.auth.admin.deleteUser(user.id);
+  if (authError) return { error: "Erro ao eliminar a conta de autenticação." };
+
+  await supabase.auth.signOut();
+  redirect("/pt/auth/login?conta_eliminada=true");
 }

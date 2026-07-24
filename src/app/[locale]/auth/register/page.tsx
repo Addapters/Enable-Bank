@@ -24,7 +24,12 @@ export default async function RegisterPage({ searchParams }: Props) {
         </div>
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
           <RegisterForm redirectTo={redirectTo} />
-          <p className="mt-6 text-center text-xs text-gray-400">{t("terms")}</p>
+          <p className="mt-6 text-center text-xs text-gray-400">
+            Ao registares-te, aceitas os nossos{" "}
+            <Link href="/termos" target="_blank" className="text-purple-700 hover:underline">Termos de Utilização</Link>
+            {" "}e a nossa{" "}
+            <Link href="/privacidade" target="_blank" className="text-purple-700 hover:underline">Política de Privacidade</Link>.
+          </p>
           <div className="mt-4 text-center text-sm text-gray-500">
             {t("hasAccount")}{" "}
             <Link href={`/auth/login${redirectTo ? `?redirectTo=${redirectTo}` : ""}`} className="font-medium text-purple-700 hover:text-purple-800 hover:underline">{t("login")}</Link>

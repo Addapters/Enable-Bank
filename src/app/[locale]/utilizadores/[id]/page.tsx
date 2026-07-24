@@ -66,7 +66,7 @@ export default async function PublicUserPage({ params }: Props) {
   // Entidades têm a sua própria página pública (com NIF, morada, verificação, etc.) — redireciona.
   if (user.tipo === "entidade") {
     const { data: entity } = await supabase
-      .from("entities")
+      .from("entities_public")
       .select("slug")
       .eq("user_id", id)
       .single();

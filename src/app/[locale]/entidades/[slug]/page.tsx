@@ -16,6 +16,17 @@ import ReviewForm from "@/components/reviews/ReviewForm";
 
 type Props = { params: Promise<{ slug: string; locale: string }> };
 
+/** Defesa em profundidade: só renderiza como link http(s) — mesmo que dados antigos/editados
+ * diretamente na base de dados contornem a validação feita ao gravar o perfil. */
+function isHttpUrl(value: string): boolean {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 const TIPO_LABEL: Record<string, string> = {
   ONGPD: "ONGPD", IPSS: "IPSS", municipio: "Município",
   misericordia: "Misericórdia", clinica: "Clínica / Hospital",
@@ -48,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const supabase = await createClient();
   const { data } = await supabase
-    .from("entities").select("nome, descricao").eq("slug", slug).single();
+    .from("entities_public").select("nome, descricao").eq("slug", slug).single();
   if (!data) return { title: "Entidade não encontrada" };
   const e = data as { nome: string; descricao: string | null };
   return {
@@ -62,7 +73,7 @@ export default async function EntityPublicPage({ params }: Props) {
   const supabase = await createClient();
 
   const { data: rawEntity } = await supabase
-    .from("entities")
+    .from("entities_public")
     .select(`id, nome, tipo, slug, morada, concelho, website, telefone,
       email_contacto, pessoa_contacto_nome, pessoa_contacto_cargo,
       descricao, logo_url, verificada, criado_em, user_id`)
@@ -190,7 +201,7 @@ export default async function EntityPublicPage({ params }: Props) {
                     <span>{entity.morada ? `${entity.morada}, ${entity.concelho}` : entity.concelho}</span>
                   </div>
                 )}
-                {entity.website && (
+                {entity.website && isHttpUrl(entity.website) && (
                   <div className="flex items-center gap-2 text-gray-600">
                     <Globe className="w-4 h-4 text-gray-400 shrink-0" aria-hidden="true" />
                     <a

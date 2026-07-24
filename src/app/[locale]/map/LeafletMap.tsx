@@ -22,6 +22,18 @@ const PUBLICO_LABEL: Record<string, string> = {
   ambos:   "Ambos",
 };
 
+/** Escapa dados de utilizadores antes de os injetar em HTML gerado manualmente (Leaflet
+ * não passa por React, por isso não há auto-escaping — titulo/nome/concelho vêm de campos
+ * de texto livre preenchidos por qualquer utilizador). */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function createMarkerHtml(tipo: string, isVerifiedEntity: boolean): string {
   const color = isVerifiedEntity ? "#7c3aed" : (TIPO_COLOR[tipo] ?? "#6b7280");
   const inner = isVerifiedEntity ? "🏛" : "";
@@ -39,8 +51,10 @@ function createMarkerHtml(tipo: string, isVerifiedEntity: boolean): string {
 function createPopupHtml(pub: MapPublication, locale: string): string {
   const color = pub.publisher_verificada ? "#7c3aed" : (TIPO_COLOR[pub.tipo] ?? "#6b7280");
   const label = TIPO_LABEL[pub.tipo] ?? pub.tipo;
+  // pub.photo_url é gerado pelo próprio fluxo de upload da app (Supabase Storage), mas
+  // escapamos na mesma antes de o colocar num atributo, por segurança em profundidade.
   const photo = pub.photo_url
-    ? `<img src="${pub.photo_url}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px 8px 0 0;display:block;" />`
+    ? `<img src="${escapeHtml(pub.photo_url)}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px 8px 0 0;display:block;" />`
     : `<div style="width:100%;height:40px;background:#f3f4f6;border-radius:8px 8px 0 0;"></div>`;
   return `
     <div style="width:220px;font-family:system-ui,sans-serif;overflow:hidden;">
@@ -48,11 +62,11 @@ function createPopupHtml(pub: MapPublication, locale: string): string {
       <div style="padding:10px 12px 12px;">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
           <span style="background:${color};color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;">${label}</span>
-          ${pub.categoria ? `<span style="color:#9ca3af;font-size:10px;">${pub.categoria}</span>` : ""}
+          ${pub.categoria ? `<span style="color:#9ca3af;font-size:10px;">${escapeHtml(pub.categoria)}</span>` : ""}
         </div>
-        <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#111827;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${pub.titulo}</p>
-        <p style="margin:0 0 4px;font-size:11px;color:#6b7280;">${pub.publisher_nome}${pub.publisher_verificada ? " ✓" : ""}</p>
-        <p style="margin:0 0 10px;font-size:11px;color:#9ca3af;">${pub.concelho} · ${PUBLICO_LABEL[pub.publico] ?? pub.publico}</p>
+        <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#111827;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${escapeHtml(pub.titulo)}</p>
+        <p style="margin:0 0 4px;font-size:11px;color:#6b7280;">${escapeHtml(pub.publisher_nome)}${pub.publisher_verificada ? " ✓" : ""}</p>
+        <p style="margin:0 0 10px;font-size:11px;color:#9ca3af;">${escapeHtml(pub.concelho)} · ${PUBLICO_LABEL[pub.publico] ?? pub.publico}</p>
         <a href="/${locale}/publications/${pub.id}"
           style="display:block;text-align:center;background:#7c3aed;color:white;font-size:12px;font-weight:600;padding:7px 12px;border-radius:8px;text-decoration:none;">
           Ver anúncio →

@@ -8,6 +8,7 @@ import SearchFilters from "./SearchFilters";
 import type { PublicationRow, CategoryRow } from "@/types/database";
 import { getFavoriteState } from "@/lib/favorites/queries";
 import { getEntityMap, toPublisherInfo, type RawPublisher } from "@/lib/publications/publisherInfo";
+import { getPublicProfiles } from "@/lib/users/publicProfiles";
 
 export const metadata: Metadata = { title: "Pesquisa de produtos de apoio" };
 
@@ -41,7 +42,7 @@ async function getResults(params: SearchParams) {
 
   let query = supabase
     .from("publications")
-    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, preco, negociavel, category:categories!categoria_id(nome), photos(url, ordem), publisher:users!user_id(id, nome, tipo, avatar_url)`, { count: "exact" })
+    .select(`id, titulo, descricao, tipo, estado, publico, disponivel, concelho, moderacao, criado_em, atualizado_em, categoria_id, user_id, latitude, longitude, embedding, preco, negociavel, category:categories!categoria_id(nome), photos(url, ordem)`, { count: "exact" })
     .eq("moderacao", "ativo")
     .order("criado_em", { ascending: false })
     .range(from, to);
@@ -90,7 +91,7 @@ async function getResults(params: SearchParams) {
   // Filtro: apenas entidades verificadas
   if (params.entidade_verificada === "true") {
     const { data: verifiedEntities } = await supabase
-      .from("entities")
+      .from("entities_public")
       .select("user_id")
       .eq("verificada", true);
     const verifiedIds = ((verifiedEntities ?? []) as { user_id: string }[]).map((e) => e.user_id);
@@ -104,7 +105,7 @@ async function getResults(params: SearchParams) {
   // Filtro: pesquisa por nome de entidade
   if (params.entidade) {
     const { data: matchedUsers } = await supabase
-      .from("users")
+      .from("user_public_profiles")
       .select("id")
       .eq("tipo", "entidade")
       .ilike("nome", `%${params.entidade}%`);
@@ -122,9 +123,10 @@ async function getResults(params: SearchParams) {
   type RawItem = PublicationRow & {
     category: { nome: string } | null;
     photos: { url: string; ordem: number }[];
-    publisher: RawPublisher;
   };
-  const items = (data ?? []) as unknown as RawItem[];
+  const rawItems = (data ?? []) as unknown as RawItem[];
+  const profiles = await getPublicProfiles(supabase, rawItems.map((p) => p.user_id));
+  const items = rawItems.map((p) => ({ ...p, publisher: (profiles.get(p.user_id) ?? null) as RawPublisher }));
   const entityMap = await getEntityMap(supabase, items.map((p) => p.publisher));
 
   return { items, count: count ?? 0, entityMap };

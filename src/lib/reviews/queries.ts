@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { ReviewRow } from "@/types/database";
+import { getPublicProfiles } from "@/lib/users/publicProfiles";
 
 export interface ReviewWithReviewer extends ReviewRow {
   reviewer: { nome: string; tipo: string; avatar_url: string | null } | null;
@@ -16,12 +17,13 @@ export async function getReviewsForUser(userId: string): Promise<ReviewSummary> 
   const supabase = await createClient();
   const { data } = await supabase
     .from("reviews")
-    .select(`id, reviewer_id, reviewed_user_id, rating, comentario, criado_em, atualizado_em,
-      reviewer:users!reviewer_id(nome, tipo, avatar_url)`)
+    .select(`id, reviewer_id, reviewed_user_id, rating, comentario, criado_em, atualizado_em`)
     .eq("reviewed_user_id", userId)
     .order("criado_em", { ascending: false });
 
-  const reviews = (data ?? []) as unknown as ReviewWithReviewer[];
+  const rawReviews = (data ?? []) as unknown as ReviewRow[];
+  const profiles = await getPublicProfiles(supabase, rawReviews.map((r) => r.reviewer_id));
+  const reviews: ReviewWithReviewer[] = rawReviews.map((r) => ({ ...r, reviewer: profiles.get(r.reviewer_id) ?? null }));
   const count = reviews.length;
   const average = count > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : null;
 

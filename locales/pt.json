@@ -134,8 +134,7 @@
       "location": "Concelho",
       "submit": "Criar conta",
       "hasAccount": "Já tens conta?",
-      "login": "Entrar",
-      "terms": "Ao registares-te, aceitas os nossos Termos de Utilização e Política de Privacidade."
+      "login": "Entrar"
     }
   },
   "dashboard": {
