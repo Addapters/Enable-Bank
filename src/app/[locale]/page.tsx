@@ -145,6 +145,25 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="py-16 px-4 bg-gradient-to-br from-purple-700 to-purple-900">
+        <div className="max-w-2xl mx-auto text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white/15">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/heart-icon-white.png" alt="" className="w-8 h-8" aria-hidden="true" />
+          </div>
+          <h2 className="text-3xl font-bold text-white mb-3">Tens um produto de apoio que já não usas?</h2>
+          <p className="text-purple-100 text-lg mb-8">Publica gratuitamente e ajuda quem precisa. Sem intermediários, sem comissões.</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/publications/new" className="flex items-center justify-center gap-2 bg-white text-purple-700 px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-purple-50 transition-colors">
+              Publicar anúncio<ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </Link>
+            <Link href="/map" className="flex items-center justify-center gap-2 border border-white/40 text-white px-6 py-3 rounded-xl font-medium hover:bg-white/10 transition-colors">
+              <MapPin className="w-4 h-4" aria-hidden="true" />Ver no mapa
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {featured.length > 0 && (
         <section className="py-12 px-4 bg-white border-b border-gray-100">
           <div className="max-w-6xl mx-auto">
@@ -169,25 +188,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      <section className="py-16 px-4 bg-gradient-to-br from-purple-700 to-purple-900">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-white/15">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/heart-icon-white.png" alt="" className="w-8 h-8" aria-hidden="true" />
-          </div>
-          <h2 className="text-3xl font-bold text-white mb-3">Tens um produto de apoio que já não usas?</h2>
-          <p className="text-purple-100 text-lg mb-8">Publica gratuitamente e ajuda quem precisa. Sem intermediários, sem comissões.</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/publications/new" className="flex items-center justify-center gap-2 bg-white text-purple-700 px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-purple-50 transition-colors">
-              Publicar anúncio<ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </Link>
-            <Link href="/map" className="flex items-center justify-center gap-2 border border-white/40 text-white px-6 py-3 rounded-xl font-medium hover:bg-white/10 transition-colors">
-              <MapPin className="w-4 h-4" aria-hidden="true" />Ver no mapa
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

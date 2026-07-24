@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname } from "@/i18n/navigation";
+
 /**
  * Espaço reservado para publicidade nas margens laterais, em ecrãs suficientemente largos
  * para não colidir com o conteúdo principal (max-w-7xl + margem de segurança).
@@ -15,7 +19,14 @@ function AdSlot({ side }: { side: "left" | "right" }) {
   );
 }
 
+// Páginas com layout edge-to-edge e os seus próprios controlos junto às margens (ex: o mapa
+// tem zoom e filtros encostados à esquerda) — mostrar anúncios aqui tapava esses controlos.
+const FULL_BLEED_PATHS = ["/map"];
+
 export default function AdRail() {
+  const pathname = usePathname();
+  if (FULL_BLEED_PATHS.some((p) => pathname.startsWith(p))) return null;
+
   return (
     <>
       <AdSlot side="left" />
