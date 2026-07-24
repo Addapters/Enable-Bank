@@ -14,6 +14,19 @@ export const metadata: Metadata = { title: "Pesquisa de produtos de apoio" };
 type SearchParams = { q?: string; tipo?: string; publico?: string; categoria?: string; disponivel?: string; page?: string; entidade_verificada?: string; entidade?: string };
 const PAGE_SIZE = 12;
 
+// Termos livres que também devem casar com estado/público, para além de título e descrição.
+const ESTADO_KEYWORDS: Record<string, "novo" | "bom" | "usado"> = {
+  novo: "novo", novos: "novo", nova: "novo", novas: "novo",
+  bom: "bom", boa: "bom",
+  usado: "usado", usada: "usado", usados: "usado", usadas: "usado",
+};
+const PUBLICO_KEYWORDS: Record<string, "crianca" | "adulto" | "ambos"> = {
+  crianca: "crianca", "criança": "crianca", criancas: "crianca", "crianças": "crianca",
+  jovem: "crianca", jovens: "crianca",
+  adulto: "adulto", adultos: "adulto",
+  ambos: "ambos", todos: "ambos",
+};
+
 async function getCategories() {
   const supabase = await createClient();
   const { data } = await supabase.from("categories").select("id, nome, slug, parent_id").eq("ativa", true).order("ordem");
@@ -54,7 +67,25 @@ async function getResults(params: SearchParams) {
       query = query.in("categoria_id", allIds);
     }
   }
-  if (params.q) query = query.or(`titulo.ilike.%${params.q}%,descricao.ilike.%${params.q}%`);
+  if (params.q) {
+    const qRaw = params.q.trim();
+    const qNorm = qRaw.toLowerCase();
+    const words = qNorm.split(/\s+/).filter(Boolean);
+
+    const orParts = [`titulo.ilike.%${qRaw}%`, `descricao.ilike.%${qRaw}%`, `concelho.ilike.%${qRaw}%`];
+
+    const estadoMatch = words.map((w) => ESTADO_KEYWORDS[w]).find(Boolean) ?? ESTADO_KEYWORDS[qNorm];
+    if (estadoMatch) orParts.push(`estado.eq.${estadoMatch}`);
+
+    const publicoMatch = words.map((w) => PUBLICO_KEYWORDS[w]).find(Boolean) ?? PUBLICO_KEYWORDS[qNorm];
+    if (publicoMatch) orParts.push(`publico.eq.${publicoMatch}`);
+
+    const { data: matchedCats } = await supabase.from("categories").select("id").ilike("nome", `%${qRaw}%`);
+    const matchedCatIds = ((matchedCats ?? []) as { id: string }[]).map((c) => c.id);
+    if (matchedCatIds.length > 0) orParts.push(`categoria_id.in.(${matchedCatIds.join(",")})`);
+
+    query = query.or(orParts.join(","));
+  }
 
   // Filtro: apenas entidades verificadas
   if (params.entidade_verificada === "true") {
