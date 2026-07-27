@@ -51,6 +51,7 @@ export default function PrivacyPolicyPage() {
             <li><strong className="text-gray-900">Anúncios:</strong> título, descrição, fotografias, categoria e localização aproximada (concelho, ou coordenadas obtidas a partir do código postal indicado).</li>
             <li><strong className="text-gray-900">Comunicações e reputação:</strong> mensagens trocadas com outros utilizadores e avaliações que deixas ou recebes.</li>
             <li><strong className="text-gray-900">Dados técnicos anónimos:</strong> termos de pesquisa e páginas visitadas, guardados sem qualquer associação à tua conta ou identidade — usados apenas para estatísticas agregadas de utilização da plataforma.</li>
+            <li><strong className="text-gray-900">Estatísticas de visitas (Vercel Analytics):</strong> apenas se autorizares os &ldquo;cookies estatísticos&rdquo; no banner de cookies — contagem agregada e anónima de visitas e páginas vistas, sem cookies de rastreio nem identificação pessoal.</li>
             <li><strong className="text-gray-900">Início de sessão com Google:</strong> se optares por &ldquo;Continuar com Google&rdquo;, recebemos o nome e email associados à tua conta Google.</li>
           </ul>
         </Section>
@@ -78,18 +79,24 @@ export default function PrivacyPolicyPage() {
         <Section title="5. Com quem partilhamos os teus dados">
           <ul className="list-disc pl-5 space-y-1.5">
             <li><strong className="text-gray-900">Supabase</strong> — o nosso fornecedor de alojamento de base de dados, autenticação e armazenamento de imagens. Os dados são guardados em servidores localizados na União Europeia.</li>
+            <li><strong className="text-gray-900">Vercel Inc.</strong> — o nosso fornecedor de alojamento da aplicação e, apenas se autorizares os &ldquo;cookies estatísticos&rdquo;, das estatísticas de visitas (Vercel Analytics), que não recolhem dados pessoais nem usam cookies de rastreio.</li>
             <li><strong className="text-gray-900">Google LLC</strong> — apenas se optares por autenticação &ldquo;Continuar com Google&rdquo;. Os dados enviados (nome, email) são processados pela Google, com sede nos EUA, ao abrigo de cláusulas contratuais-tipo aprovadas pela Comissão Europeia como mecanismo de transferência internacional adequado.</li>
             <li>Não vendemos nem partilhamos os teus dados com terceiros para fins de publicidade ou marketing.</li>
           </ul>
         </Section>
 
         <Section title="6. Cookies">
-          <p>Usamos apenas cookies estritamente necessários ao funcionamento do site, que por isso não requerem consentimento prévio nos termos da lei aplicável às comunicações eletrónicas:</p>
+          <p>Usamos cookies estritamente necessários ao funcionamento do site, que por isso não requerem consentimento prévio nos termos da lei aplicável às comunicações eletrónicas:</p>
           <ul className="list-disc pl-5 space-y-1.5">
             <li><strong className="text-gray-900">NEXT_LOCALE</strong> — guarda a tua preferência de idioma.</li>
             <li><strong className="text-gray-900">Cookies de sessão de autenticação</strong> — mantêm-te ligado à tua conta entre visitas.</li>
           </ul>
-          <p>Não usamos cookies de publicidade, redes sociais ou análise de terceiros.</p>
+          <p>
+            Com a tua autorização (banner de cookies ou o link &ldquo;Gerir cookies&rdquo; no
+            rodapé), ativamos também o Vercel Analytics para estatísticas agregadas e anónimas
+            de visitas — não usa cookies nem identifica visitantes individualmente. Não usamos
+            cookies de publicidade, redes sociais ou análise de terceiros para outros fins.
+          </p>
         </Section>
 
         <Section title="7. Durante quanto tempo guardamos os teus dados">

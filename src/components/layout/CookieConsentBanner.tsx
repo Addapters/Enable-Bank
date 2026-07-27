@@ -3,55 +3,14 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Link } from "@/i18n/navigation";
 import { Cookie, X } from "lucide-react";
-
-const STORAGE_KEY = "enable-bank-cookie-consent";
-const CONSENT_CHANGED_EVENT = "enable-bank:consent-changed";
-
-// Disparado por qualquer sítio do site (ex: link "Gerir cookies" no footer) para reabrir
-// o painel de preferências depois do utilizador já ter aceitado/rejeitado.
-export const OPEN_COOKIE_PREFERENCES_EVENT = "enable-bank:open-cookie-preferences";
-
-interface Consent {
-  essenciais: true;
-  estatisticas: boolean;
-  atualizado_em: string;
-}
-
-function readConsent(): Consent | null {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Consent) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeConsent(estatisticas: boolean) {
-  const consent: Consent = { essenciais: true, estatisticas, atualizado_em: new Date().toISOString() };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(consent));
-  window.dispatchEvent(new Event(CONSENT_CHANGED_EVENT));
-}
-
-// Sincroniza com o localStorage via useSyncExternalStore em vez de useEffect+setState — isto
-// evita re-renders em cascata no mount e funciona corretamente com SSR (o snapshot do
-// servidor nunca toca localStorage). Uma escrita nesta aba não dispara o evento nativo
-// "storage" (só dispara nas OUTRAS abas), por isso disparamos um evento próprio em writeConsent.
-function subscribeToConsent(callback: () => void) {
-  window.addEventListener(CONSENT_CHANGED_EVENT, callback);
-  window.addEventListener("storage", callback);
-  return () => {
-    window.removeEventListener(CONSENT_CHANGED_EVENT, callback);
-    window.removeEventListener("storage", callback);
-  };
-}
-
-function getConsentSnapshot() {
-  return readConsent() ? "recorded" : "missing";
-}
-
-function getServerConsentSnapshot() {
-  return "missing";
-}
+import {
+  OPEN_COOKIE_PREFERENCES_EVENT,
+  readConsent,
+  writeConsent,
+  subscribeToConsent,
+  getConsentSnapshot,
+  getServerConsentSnapshot,
+} from "@/lib/cookieConsent";
 
 export default function CookieConsentBanner() {
   const consentStatus = useSyncExternalStore(subscribeToConsent, getConsentSnapshot, getServerConsentSnapshot);
@@ -103,7 +62,7 @@ export default function CookieConsentBanner() {
                 <Cookie className="w-5 h-5 text-purple-700" aria-hidden="true" />
               </span>
               <p className="text-sm text-gray-600">
-                Usamos cookies essenciais para o funcionamento do site (como manter a tua sessão). Não utilizamos cookies de publicidade nem de análise de terceiros. Podes escolher as tuas preferências ou consultar a nossa{" "}
+                Usamos cookies essenciais para o funcionamento do site (como manter a tua sessão) e, com a tua autorização, estatísticas anónimas de visitas para melhorar a plataforma. Não utilizamos cookies de publicidade nem de análise de terceiros para outros fins. Podes escolher as tuas preferências ou consultar a nossa{" "}
                 <Link href="/privacidade" className="text-purple-700 hover:underline">Política de Privacidade</Link>.
               </p>
             </div>
@@ -164,7 +123,7 @@ export default function CookieConsentBanner() {
                 <div>
                   <p className="text-sm font-semibold text-gray-900">Cookies estatísticos</p>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Ainda não utilizamos cookies de estatísticas ou publicidade neste site. Se isso vier a mudar no futuro, esta preferência será respeitada.
+                    Usamos o Vercel Analytics para contar visitas e páginas vistas de forma agregada e anónima (sem cookies de rastreio nem identificação pessoal). Só é ativado se autorizares aqui.
                   </p>
                 </div>
                 <button

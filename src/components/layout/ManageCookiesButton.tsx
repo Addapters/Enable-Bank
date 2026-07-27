@@ -1,6 +1,6 @@
 "use client";
 
-import { OPEN_COOKIE_PREFERENCES_EVENT } from "./CookieConsentBanner";
+import { OPEN_COOKIE_PREFERENCES_EVENT } from "@/lib/cookieConsent";
 
 export default function ManageCookiesButton({ className }: { className?: string }) {
   return (

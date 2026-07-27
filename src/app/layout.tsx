@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
+import AnalyticsGate from "@/components/layout/AnalyticsGate";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -25,7 +26,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt" className={`h-full ${nunito.variable}`}>
-      <body className="min-h-full flex flex-col antialiased">{children}</body>
+      <body className="min-h-full flex flex-col antialiased">
+        {children}
+        <AnalyticsGate />
+      </body>
     </html>
   );
 }
