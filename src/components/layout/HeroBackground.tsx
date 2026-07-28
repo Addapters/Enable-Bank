@@ -9,25 +9,27 @@ const NODES: {
   alt: string;
   halo?: boolean;
 }[] = [
+  // Lado esquerdo (4 ícones)
   { left: 7.5, top: 20.833, size: 64, anim: "eb-bob-a", duration: 9, delay: 0, icon: "mobilidade", alt: "Mobilidade", halo: true },
   { left: 17.083, top: 65.278, size: 58, anim: "eb-bob-b", duration: 11, delay: 1, icon: "comunicacao", alt: "Comunicação" },
   { left: 27.5, top: 15.278, size: 60, anim: "eb-bob-b", duration: 10, delay: 2, icon: "banho-higiene", alt: "Banho e Higiene" },
   { left: 32.917, top: 83.333, size: 62, anim: "eb-bob-a", duration: 12, delay: 3, icon: "cama-descanso", alt: "Cama e Descanso" },
-  { left: 42.083, top: 30.556, size: 60, anim: "eb-bob-a", duration: 10.5, delay: 1.5, icon: "reabilitacao", alt: "Reabilitação", halo: true },
-  { left: 51.25, top: 88.889, size: 60, anim: "eb-bob-b", duration: 13, delay: 2.5, icon: "casa-ambiente", alt: "Casa e Ambiente" },
-  { left: 58.333, top: 16.667, size: 60, anim: "eb-bob-b", duration: 9.5, delay: 4, icon: "lazer-desporto", alt: "Lazer e Desporto" },
-  { left: 63.333, top: 59.722, size: 54, anim: "eb-bob-a", duration: 11, delay: 6, icon: "reabilitacao", alt: "Reabilitação" },
-  { left: 73.333, top: 83.333, size: 58, anim: "eb-bob-a", duration: 11.5, delay: 5, icon: "outros", alt: "Outros" },
-  { left: 81.25, top: 26.389, size: 64, anim: "eb-bob-b", duration: 10, delay: 6.5, icon: "mobilidade", alt: "Mobilidade", halo: true },
-  { left: 92.083, top: 59.722, size: 60, anim: "eb-bob-b", duration: 12.5, delay: 3.5, icon: "comunicacao", alt: "Comunicação" },
-  { left: 95.833, top: 16.667, size: 56, anim: "eb-bob-a", duration: 13, delay: 7, icon: "banho-higiene", alt: "Banho e Higiene" },
+  // Lado direito (4 ícones)
+  { left: 73.333, top: 83.333, size: 58, anim: "eb-bob-a", duration: 11.5, delay: 5, icon: "casa-ambiente", alt: "Casa e Ambiente" },
+  { left: 81.25, top: 26.389, size: 64, anim: "eb-bob-b", duration: 10, delay: 6.5, icon: "lazer-desporto", alt: "Lazer e Desporto", halo: true },
+  { left: 92.083, top: 59.722, size: 60, anim: "eb-bob-b", duration: 12.5, delay: 3.5, icon: "reabilitacao", alt: "Reabilitação" },
+  { left: 95.833, top: 16.667, size: 56, anim: "eb-bob-a", duration: 13, delay: 7, icon: "outros", alt: "Outros" },
 ];
 
 const DOTS: { left: number; top: number; size: number; color: string; duration: number; delay: number }[] = [
   { left: 12.5, top: 45.833, size: 12, color: "rgba(255,255,255,.8)", duration: 7, delay: 0 },
   { left: 22.917, top: 41.667, size: 10, color: "rgba(230,244,230,.85)", duration: 8.5, delay: 1 },
   { left: 37.917, top: 62.5, size: 11, color: "rgba(255,255,255,.7)", duration: 9, delay: 3 },
+  { left: 42.083, top: 30.556, size: 11, color: "rgba(255,255,255,.75)", duration: 10.5, delay: 1.5 },
   { left: 46.667, top: 12.5, size: 12, color: "rgba(253,244,217,.85)", duration: 7.5, delay: 2 },
+  { left: 51.25, top: 88.889, size: 10, color: "rgba(230,244,230,.8)", duration: 9, delay: 2.5 },
+  { left: 58.333, top: 16.667, size: 10, color: "rgba(255,255,255,.7)", duration: 8, delay: 4 },
+  { left: 63.333, top: 59.722, size: 11, color: "rgba(252,234,227,.8)", duration: 11, delay: 3 },
   { left: 69.167, top: 38.889, size: 12, color: "rgba(255,255,255,.75)", duration: 8, delay: 4 },
   { left: 86.667, top: 88.889, size: 11, color: "rgba(252,234,227,.85)", duration: 9.5, delay: 5 },
   { left: 98.75, top: 38.889, size: 10, color: "rgba(255,255,255,.65)", duration: 6.5, delay: 6 },
