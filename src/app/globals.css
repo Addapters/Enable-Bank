@@ -88,3 +88,33 @@ button:disabled,
 .animate-heart-pop {
   animation: heart-pop 0.35s ease-out;
 }
+
+/* Fundo animado do banner inicial (rede de produtos de apoio) */
+.eb-hero { position: relative; width: 100%; overflow: hidden; background: linear-gradient(118deg, #8C85EE 0%, #7A72E4 38%, #6961D6 72%, #5D54C8 100%); }
+.eb-bg, .eb-layer { position: absolute; inset: 0; }
+.eb-bg > div { position: absolute; border-radius: 50%; }
+.eb-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.eb-svg g { fill: none; stroke-width: 1.2; }
+.eb-svg .eb-g1 { stroke: rgba(255,255,255,.34); stroke-dasharray: 6 11; animation: eb-dash 14s linear infinite; }
+.eb-svg .eb-g2 { stroke: rgba(255,255,255,.24); stroke-dasharray: 5 13; animation: eb-dash2 18s linear infinite; }
+.eb-n { position: absolute; width: 0; height: 0; }
+.eb-c { border-radius: 50%; overflow: hidden; background: #fff; box-shadow: 0 8px 24px rgba(30,20,80,.16); }
+.eb-c img { display: block; width: 100%; height: 100%; }
+.eb-h { position: absolute; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.47); }
+.eb-d { border-radius: 50%; }
+.eb-vig { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 60% 85% at 50% 50%, rgba(60,52,150,.55) 0%, rgba(60,52,150,.25) 55%, rgba(60,52,150,0) 100%); }
+.eb-content { position: relative; z-index: 2; }
+@keyframes eb-dash { to { stroke-dashoffset: -240; } }
+@keyframes eb-dash2 { to { stroke-dashoffset: 200; } }
+@keyframes eb-bob-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+@keyframes eb-bob-b { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
+@keyframes eb-halo { 0% { transform: scale(.78); opacity: .4; } 100% { transform: scale(2.1); opacity: 0; } }
+@keyframes eb-breathe { 0%, 100% { transform: scale(1); opacity: .55; } 50% { transform: scale(1.22); opacity: .9; } }
+@keyframes eb-tw { 0%, 100% { opacity: .4; transform: scale(1); } 50% { opacity: .95; transform: scale(1.3); } }
+@media (prefers-reduced-motion: reduce) {
+  .eb-hero * { animation: none !important; }
+}
+@media (max-width: 767px) {
+  .eb-layer .eb-n:nth-child(n+7) { display: none; }
+  .eb-c { opacity: .55; }
+}

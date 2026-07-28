@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { Search, MapPin, ArrowRight, MessageCircle, PackageCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import HeroBackground from "@/components/layout/HeroBackground";
 import PublicationCard from "@/components/publications/PublicationCard";
 import { getFavoriteState } from "@/lib/favorites/queries";
 import { getEntityMap, toPublisherInfo, type RawPublisher } from "@/lib/publications/publisherInfo";
@@ -109,10 +110,21 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col">
-      <section className="bg-gradient-to-br from-purple-700 to-purple-900 text-white py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight">{t("hero.title")}</h1>
-          <p className="text-purple-100 text-lg mb-8 max-w-2xl mx-auto">{t("hero.tagline")}</p>
+      <section className="eb-hero min-h-[400px] h-auto lg:h-[400px] text-white flex items-center px-4 py-12 lg:py-0">
+        <HeroBackground />
+        <div className="eb-content max-w-4xl mx-auto text-center">
+          <h1
+            className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-4 leading-tight max-w-5xl mx-auto"
+            style={{ textShadow: "0 2px 16px rgba(50,44,130,.65)" }}
+          >
+            Plataforma colaborativa de doação,<br />troca e venda de produtos de apoio
+          </h1>
+          <p
+            className="text-purple-100 text-lg mb-8 max-w-2xl mx-auto"
+            style={{ textShadow: "0 1px 10px rgba(50,44,130,.6)" }}
+          >
+            {t("hero.tagline")}
+          </p>
           <div className="max-w-2xl mx-auto">
             <form action="/pt/search" method="GET">
               <div className="flex gap-2 bg-white rounded-xl p-2 shadow-lg">

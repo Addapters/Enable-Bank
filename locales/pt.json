@@ -37,8 +37,8 @@
   },
   "home": {
     "hero": {
-      "title": "Uma plataforma colaborativa de doação, troca e venda de produtos de apoio.",
-      "tagline": "Gratuita, acessível e construída para quem mais precisa.",
+      "title": "Plataforma colaborativa de doação, troca e venda de produtos de apoio",
+      "tagline": "Banco digital de produtos de apoio, gratuito, acessível para quem mais precisa.",
       "searchPlaceholder": "Encontra o produto de apoio que precisas",
       "searchButton": "Pesquisar",
       "orBrowse": "Explorar por categorias"
