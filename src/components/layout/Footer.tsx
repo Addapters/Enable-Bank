@@ -19,13 +19,13 @@ export default function Footer() {
           {/* Coluna 1 */}
           <div className="col-span-2 lg:col-span-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/enable-bank-logo.png" alt="Enable Bank" className="h-11 w-auto mb-4 brightness-0 invert" />
+            <img src="/enable-bank-logo.png" alt="Enable Bank" className="w-[203px] h-auto mb-4 brightness-0 invert" />
             <p className="text-sm text-purple-100 mb-4">
               Circular, gratuito e acessível para quem mais precisa.
             </p>
             <a href="https://www.addapters.org/" target="_blank" rel="noopener noreferrer" className="inline-block">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logotipo_addaptersorg.png" alt="Addapters Org" className="h-11 w-auto brightness-0 invert opacity-90 hover:opacity-100 transition-opacity" />
+              <img src="/logotipo_addaptersorg.png" alt="Addapters Org" className="w-[203px] h-auto brightness-0 invert opacity-90 hover:opacity-100 transition-opacity" />
             </a>
           </div>
 
