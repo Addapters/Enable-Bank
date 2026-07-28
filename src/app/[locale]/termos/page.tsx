@@ -4,9 +4,9 @@ import { FileText } from "lucide-react";
 
 export const metadata: Metadata = { title: "Termos de Utilização — Enable Bank" };
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, id }: { title: string; children: React.ReactNode; id?: string }) {
   return (
-    <section className="space-y-3">
+    <section id={id} className="space-y-3 scroll-mt-24">
       <h2 className="text-lg font-bold text-gray-900">{title}</h2>
       <div className="space-y-3 text-sm text-gray-600 leading-relaxed">{children}</div>
     </section>
@@ -85,7 +85,49 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="7. Limitação de responsabilidade">
+        <Section id="aviso-responsabilidade" title="7. Aviso e Limitação de Responsabilidade">
+          <p>
+            O Enable Bank é uma plataforma de intermediação destinada exclusivamente à divulgação de
+            produtos de apoio e ajudas técnicas para pessoas com deficiência ou incapacidade, como
+            cadeiras de rodas, andarilhos, equipamentos de comunicação aumentativa e alternativa,
+            camas articuladas, entre outros dispositivos destinados a promover a autonomia e a
+            qualidade de vida.
+          </p>
+          <p>
+            A plataforma promove a economia circular no setor da reabilitação e da vida independente,
+            incentivando a reutilização responsável de equipamentos que ainda se encontram em
+            condições de utilização.
+          </p>
+          <p>
+            O Enable Bank não vende, compra, certifica, inspeciona, repara, valida nem garante o
+            estado, a segurança, a conformidade legal ou a adequação dos equipamentos anunciados. A
+            responsabilidade pela descrição, estado de conservação, funcionamento, manutenção,
+            higienização e entrega dos equipamentos pertence exclusivamente ao anunciante.
+          </p>
+          <p>
+            Os utilizadores são responsáveis por verificar cuidadosamente o estado do equipamento
+            antes da sua utilização e por assegurar que este é adequado às necessidades da pessoa que
+            o irá utilizar.
+          </p>
+          <p>
+            A escolha e utilização de qualquer produto de apoio deve ser sempre efetuada com o
+            acompanhamento de um médico fisiatra, terapeuta ocupacional, fisioterapeuta ou outro
+            profissional habilitado. A utilização de equipamentos inadequados, danificados ou
+            incorretamente ajustados poderá causar lesões ou outros danos.
+          </p>
+          <p>
+            O Enable Bank não é parte nas transações realizadas entre utilizadores nem assume
+            qualquer responsabilidade por acidentes, lesões, prejuízos, incumprimentos, litígios,
+            perdas financeiras ou quaisquer danos resultantes da utilização da plataforma ou dos
+            equipamentos nela divulgados.
+          </p>
+          <p>
+            Não são permitidos anúncios de bens que não constituam produtos de apoio ou ajudas
+            técnicas, incluindo roupa, eletrodomésticos, mobiliário comum, veículos, imóveis ou
+            outros artigos sem finalidade de apoio à deficiência ou incapacidade. O Enable Bank
+            reserva-se o direito de remover qualquer anúncio que considere inadequado ou que viole as
+            regras da plataforma.
+          </p>
           <p>
             O Enable Bank é disponibilizado &ldquo;tal como está&rdquo;. Na medida máxima permitida por lei,
             não somos responsáveis por danos resultantes de transações entre utilizadores, da
