@@ -202,6 +202,7 @@ export default function EntityProfileForm({ defaultEmail, entity }: Props) {
             required
             defaultValue={entity?.telefone ?? ""}
             placeholder="+351 210 000 000"
+            hint="Este número é usado para o contacto via WhatsApp nos anúncios da entidade. Ao indicá-lo, autorizas ser contactado(a) por essa via."
             error={fields.telefone}
           />
         </div>

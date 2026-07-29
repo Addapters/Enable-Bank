@@ -639,9 +639,11 @@ export default function NewPublicationForm({
           <FormField
             id="telefone"
             name="telefone"
-            label="Telefone (opcional)"
+            label="Telefone"
             type="tel"
+            required
             placeholder="+351 9XX XXX XXX"
+            hint="Este número é usado para o contacto via WhatsApp. Ao indicá-lo, autorizas ser contactado(a) por essa via."
             error={errors.telefone}
           />
         </div>

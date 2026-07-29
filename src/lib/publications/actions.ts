@@ -106,6 +106,8 @@ export async function createPublication(
     errors.preco = "Indica um preço válido para o produto.";
   if (!email_contacto || !email_contacto.includes("@"))
     errors.email_contacto = "Introduz um email de contacto válido.";
+  if (!telefone)
+    errors.telefone = "O telefone é obrigatório para contacto via WhatsApp.";
   if (photoUrls.length === 0)
     errors.photos = "Adiciona pelo menos uma fotografia.";
 
@@ -203,6 +205,8 @@ export async function updatePublication(
     errors.preco = "Indica um preço válido para o produto.";
   if (!email_contacto || !email_contacto.includes("@"))
     errors.email_contacto = "Introduz um email de contacto válido.";
+  if (!telefone)
+    errors.telefone = "O telefone é obrigatório para contacto via WhatsApp.";
   if (keepPhotoIds.length === 0 && newPhotoUrls.length === 0)
     errors.photos = "O anúncio precisa de pelo menos uma fotografia.";
   if (!codigo_postal || !/^\d{4}$/.test(codigo_postal))

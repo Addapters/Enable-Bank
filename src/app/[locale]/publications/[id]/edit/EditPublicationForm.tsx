@@ -556,9 +556,10 @@ export default function EditPublicationForm({
             placeholder="email@exemplo.pt" error={errors.email_contacto}
           />
           <FormField
-            id="telefone" name="telefone" label="Telefone (opcional)"
-            type="tel" defaultValue={defaultTelefone}
+            id="telefone" name="telefone" label="Telefone"
+            type="tel" required defaultValue={defaultTelefone}
             placeholder="+351 9XX XXX XXX" error={errors.telefone}
+            hint="Este número é usado para o contacto via WhatsApp. Ao indicá-lo, autorizas ser contactado(a) por essa via."
           />
         </div>
       </Section>

@@ -5,6 +5,7 @@ import { Bell, CheckCircle2, XCircle, Heart, PackageX, BadgeCheck, Star, Message
 import { createClient } from "@/lib/supabase/server";
 import type { NotificationRow, NotificationType } from "@/types/database";
 import { timeAgo } from "@/lib/utils/timeAgo";
+import { MESSAGING_ENABLED } from "@/lib/config/features";
 
 export const metadata: Metadata = { title: "Notificações — Enable Bank" };
 
@@ -31,7 +32,12 @@ export default async function NotificacoesPage() {
     .order("criado_em", { ascending: false })
     .limit(50);
 
-  const notifications = (data ?? []) as unknown as NotificationRow[];
+  const allNotifications = (data ?? []) as unknown as NotificationRow[];
+  // Mensagens internas estão desativadas — não mostra notificações desse tipo
+  // (nem os links para /mensagens que elas conteriam).
+  const notifications = MESSAGING_ENABLED
+    ? allNotifications
+    : allNotifications.filter((n) => n.tipo !== "nova_mensagem");
 
   // Marca tudo como lido ao visitar a página — já estamos a mostrar tudo, não faz sentido
   // manter o badge com o número antigo.

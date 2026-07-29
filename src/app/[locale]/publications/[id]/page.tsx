@@ -13,6 +13,7 @@ import type { PublicationRow, CategoryRow, PhotoRow, UserRow } from "@/types/dat
 import { getFavoriteState } from "@/lib/favorites/queries";
 import SendMessageButton from "@/components/messages/SendMessageButton";
 import { getPublicProfiles } from "@/lib/users/publicProfiles";
+import { MESSAGING_ENABLED } from "@/lib/config/features";
 
 type Props = { params: Promise<{ id: string; locale: string }> };
 type PublicationFull = PublicationRow & {
@@ -151,8 +152,8 @@ export default async function PublicationDetailPage({ params }: Props) {
 
         <aside className="space-y-4" aria-label="Informação de contacto">
           <h2 className="text-base font-semibold text-gray-900">Contacto</h2>
-          <ContactInfo userId={pub.user_id} />
-          {viewerId && viewerId !== pub.user_id && (
+          <ContactInfo userId={pub.user_id} productTitle={pub.titulo} />
+          {MESSAGING_ENABLED && viewerId && viewerId !== pub.user_id && (
             <SendMessageButton otherUserId={pub.user_id} publicationId={pub.id} />
           )}
           <div className="text-xs text-center text-gray-400 space-y-1">

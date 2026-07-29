@@ -106,9 +106,11 @@ export default function ParticularProfileForm({
         name="telefone"
         label="Telefone"
         type="tel"
+        required
         defaultValue={defaultTelefone ?? ""}
         autoComplete="tel"
         placeholder="+351 912 345 678"
+        hint="Este número é usado para o contacto via WhatsApp nos teus anúncios. Ao indicá-lo, autorizas ser contactado(a) por essa via."
         error={fields.telefone}
       />
 

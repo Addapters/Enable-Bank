@@ -39,6 +39,7 @@ export async function updateParticularProfile(
   const fields: Record<string, string> = {};
   if (!nome) fields.nome = "O nome é obrigatório.";
   if (!concelho) fields.concelho = "O concelho é obrigatório.";
+  if (!telefone) fields.telefone = "O telefone é obrigatório para contacto via WhatsApp.";
   if (Object.keys(fields).length) return { error: "Corrige os erros abaixo.", fields };
 
   const { error: userErr } = await supabase
@@ -49,12 +50,10 @@ export async function updateParticularProfile(
   if (userErr) return { error: "Erro ao guardar o perfil." };
 
   // Upsert contacto (para que apareça nos anúncios)
-  if (telefone) {
-    await supabase.from("contacts").upsert(
-      { user_id: user.id, email_contacto: user.email!, telefone },
-      { onConflict: "user_id" }
-    );
-  }
+  await supabase.from("contacts").upsert(
+    { user_id: user.id, email_contacto: user.email!, telefone },
+    { onConflict: "user_id" }
+  );
 
   revalidatePath("/pt/profile");
   revalidatePath("/pt/dashboard");
